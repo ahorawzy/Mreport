@@ -13,3 +13,4 @@ Imports: leaflet,
     grDevices,
     wesanderson
 Depends: leafletCN
+RoxygenNote: 6.0.1
