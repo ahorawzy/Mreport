@@ -2,8 +2,8 @@
 #'
 #' This function helps you plot georaphy points easily when given a dataframe.
 #'
-#' This function is built based on package "leaflet" and "leafletCN". "leaflet" is a brilliant
-#' package of GIS and "leafletCN" contains useful China geographical information.
+#' This function is built based on package 'leaflet' and 'leafletCN'. 'leaflet' is a brilliant
+#' package of GIS and 'leafletCN' contains useful China geographical information.
 #' This function receives a dataframe contains points and their geographical information of
 #' longitude and latitude perhaps as well as other information about points.
 #' It returns a map with points on it. Other information can also be added such as
@@ -22,21 +22,21 @@
 #' @param region Default value is FALSE. It can be a string of Chinese administrative area name.
 #' @param type Default value is FALSE. When set it as True, different type of points will be drawn
 #' with different colour.
-#' @param map The basemap to be chosen. Default value is "OpenStreet". It also can be:
+#' @param map The basemap to be chosen. Default value is 'OpenStreet'. It also can be:
 #' \itemize{
-#'     \item "amap" which is provided by GaoDe.
-#'     \item "landform" which is provided by Esri of satellite basemap.
-#'     \item "watercolor" which is provided by Stamen of watercolor basemap.
+#'     \item 'amap' which is provided by GaoDe.
+#'     \item 'landform' which is provided by Esri of satellite basemap.
+#'     \item 'watercolor' which is provided by Stamen of watercolor basemap.
 #' }
 #'
 #' @export
 
 geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStreet") {
-
+    
     if (sum(is.na(pointdf)) != 0) {
         stop("There is NA value in the dataframe. Please clear it.")
     }
-
+    
     m <- leaflet::leaflet(pointdf)
     if (map == "OpenStreet") {
         m <- leaflet::addTiles(m)
@@ -49,7 +49,7 @@ geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStre
     }
     if (is.character(region)) {
         reg <- leafletCN::leafletGeo(region)
-        m <- leaflet::addPolygons(m, data = reg, stroke = TRUE, smoothFactor = 1,
+        m <- leaflet::addPolygons(m, data = reg, stroke = TRUE, smoothFactor = 1, 
             fillOpacity = 0, weight = 3)
     }
     if (type == TRUE) {
@@ -58,11 +58,11 @@ geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStre
         if (ntype <= 5) {
             cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2"))
         } else {
-            cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2",
+            cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2", 
                 type = "continuous"))
         }
         pal <- leaflet::colorFactor(cols, domain = types)
-        m <- leaflet::addCircleMarkers(m, lng = ~lng, lat = ~lat, label = ~label,
+        m <- leaflet::addCircleMarkers(m, lng = ~lng, lat = ~lat, label = ~label, 
             color = ~pal(type))
         m <- leaflet::addLegend(m, "bottomright", pal = pal, values = types)
     } else {
