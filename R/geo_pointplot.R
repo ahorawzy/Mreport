@@ -23,7 +23,7 @@ geo_pointplot <- function(pointdf,region=FALSE,type=FALSE,
   if(type == TRUE){
     types <- unique(pointdf[,"type"])
     ntype <- length(types)
-    cols <- grDevices::terrain.colors(ntype)
+    cols <- as.character(wesanderson::wes_palette(n=ntype,name="Darjeeling1"))
     pal <- leaflet::colorFactor(cols,domain=types)
     m <- leaflet::addCircleMarkers(m,lng=~lng,lat=~lat,label = ~label,
                                    color = ~pal(type))
