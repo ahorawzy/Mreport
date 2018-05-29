@@ -9,3 +9,5 @@ Description: This package aimes at helping me make monthly analysis report of
 License: GPL
 Encoding: UTF-8
 LazyData: true
+Imports: leaflet,
+    leafletCN
