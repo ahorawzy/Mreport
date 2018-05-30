@@ -4,7 +4,8 @@
 \alias{geo_pointplot}
 \title{Plot geographical point.}
 \usage{
-geo_pointplot(pointdf, region = FALSE, type = FALSE, map = "OpenStreet")
+geo_pointplot(pointdf, region = FALSE, type = FALSE, map = "OpenStreet",
+  popup = FALSE)
 }
 \arguments{
 \item{pointdf}{The dataframe contains points information. It must contains columns as follows:
@@ -16,6 +17,7 @@ geo_pointplot(pointdf, region = FALSE, type = FALSE, map = "OpenStreet")
 It can contains columns as follows:
 \itemize{
     \item type: The type of point, which can be character.
+    \item popup: Set the popup of point.
 }}
 
 \item{region}{Default value is FALSE. It can be a string of Chinese administrative area name.}
@@ -23,19 +25,19 @@ It can contains columns as follows:
 \item{type}{Default value is FALSE. When set it as True, different type of points will be drawn
 with different colour.}
 
-\item{map}{The basemap to be chosen. Default value is "OpenStreet". It also can be:
+\item{map}{The basemap to be chosen. Default value is 'OpenStreet'. It also can be:
 \itemize{
-    \item "amap" which is provided by GaoDe.
-    \item "landform" which is provided by Esri of satellite basemap.
-    \item "watercolor" which is provided by Stamen of watercolor basemap.
+    \item 'amap' which is provided by GaoDe.
+    \item 'landform' which is provided by Esri of satellite basemap.
+    \item 'watercolor' which is provided by Stamen of watercolor basemap.
 }}
 }
 \description{
 This function helps you plot georaphy points easily when given a dataframe.
 }
 \details{
-This function is built based on package "leaflet" and "leafletCN". "leaflet" is a brilliant
-package of GIS and "leafletCN" contains useful China geographical information.
+This function is built based on package 'leaflet' and 'leafletCN'. 'leaflet' is a brilliant
+package of GIS and 'leafletCN' contains useful China geographical information.
 This function receives a dataframe contains points and their geographical information of
 longitude and latitude perhaps as well as other information about points.
 It returns a map with points on it. Other information can also be added such as
