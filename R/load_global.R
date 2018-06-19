@@ -11,3 +11,8 @@ load_base <- function(){
   load_raw("station_useful")
   load_raw("line")
 }
+
+#' @export
+load_sample_base <- function(){
+  load_raw("sample_base")
+}
