@@ -9,6 +9,7 @@ load_raw <- function(filename){
 load_base <- function(){
   load_raw("station_simple")
   load_raw("station_useful")
+  load_raw("station_plot")
   load_raw("line")
 }
 
