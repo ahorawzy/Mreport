@@ -33,7 +33,10 @@
 #' @export
 
 geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStreet",
-                          popup = FALSE) {
+                          popup = FALSE,na.rm = FALSE) {
+    if (na.rm){
+      pointdf <- na.omit(pointdf)
+    }
 
     if (sum(is.na(pointdf)) != 0) {
         stop("There is NA value in the dataframe. Please clear it.")
