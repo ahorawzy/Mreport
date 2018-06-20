@@ -22,3 +22,11 @@ handle_splitatts <- function(dfatts,attname,startpoint){
   x <- x[x$V1!="character(0)",]
   return(x)
 }
+
+#' @export
+handle_mergeplot <- function(samplebase,stationplot){
+  x <- merge(samplebase,stationplot,by.x="index",by.y="popup",
+             all.x = T)
+  names(x)[1:2] <- c("popup","type")
+  return(x)
+}
