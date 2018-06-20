@@ -2,6 +2,7 @@
 
 export(geo_pointplot)
 export(handle_extractindex)
+export(handle_mergeplot)
 export(handle_selectindex)
 export(handle_splitatts)
 export(load_base)
