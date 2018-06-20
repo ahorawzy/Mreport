@@ -3,6 +3,8 @@
 export(geo_pointplot)
 export(handle_extractindex)
 export(handle_selectindex)
+export(handle_splitatts)
 export(load_base)
 export(load_raw)
 export(load_sample_base)
+export(save_raw)
