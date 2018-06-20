@@ -64,7 +64,7 @@ geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStre
         if (ntype <= 5) {
             cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2"))
         } else {
-            cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2",
+            cols <- as.character(wesanderson::wes_palette(n = ntype, name = "Darjeeling1",
                 type = "continuous"))
         }
         pal <- leaflet::colorFactor(cols, domain = types)
@@ -79,7 +79,7 @@ geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStre
       if (ntype <= 5) {
         cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2"))
       } else {
-        cols <- as.character(wesanderson::wes_palette(n = ntype, name = "BottleRocket2",
+        cols <- as.character(wesanderson::wes_palette(n = ntype, name = "Darjeeling1",
                                                       type = "continuous"))
       }
       pal <- leaflet::colorFactor(cols, domain = types)
