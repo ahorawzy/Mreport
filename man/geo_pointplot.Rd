@@ -5,7 +5,7 @@
 \title{Plot geographical point.}
 \usage{
 geo_pointplot(pointdf, region = FALSE, type = FALSE, map = "OpenStreet",
-  popup = FALSE)
+  popup = FALSE, na.rm = FALSE)
 }
 \arguments{
 \item{pointdf}{The dataframe contains points information. It must contains columns as follows:
