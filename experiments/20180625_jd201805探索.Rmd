@@ -1,0 +1,49 @@
+---
+title: "20180625_jd201805探索"
+author: "wzy"
+date: "2018年6月25日"
+output: html_document
+---
+
+```{r}
+options(stringsAsFactors = F)
+```
+
+```{r}
+library(Mreport)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+
+```{r}
+jd201805 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jd201805)
+```
+
+```{r}
+jd201805 <- caculate_equivalent(jd201805)
+```
+
+```{r}
+jd201805s <- select_atts(jd201805)
+```
+
+
+```{r}
+jd201805all <- handle_mergeline(jd201805s,station_line)
+```
+
+```{r}
+names(jd201805all)
+```
+
+```{r}
+jd <- handle_mergesample(jd201805all,sample_base)
+names(jd)
+```
+
+

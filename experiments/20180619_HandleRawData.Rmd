@@ -1,0 +1,99 @@
+---
+title: "20180619_HandleRawData"
+author: "wzy"
+date: "2018年6月19日"
+output: html_document
+---
+
+```{r}
+options(stringsAsFactors = F)
+```
+
+```{r}
+library(Mreport)
+```
+
+Experiment of today mainly handle raw data of station and others.
+
+## 1. station
+
+```{r}
+station <- read.csv("D:\\data\\sx_raw\\基础数据\\站点管理\\all.csv",stringsAsFactors = F)
+```
+
+```{r}
+dim(station)
+```
+
+```{r}
+names(station)
+```
+
+```{r}
+usefulnames <- c(2,3,4,5,7,8,9,10,11,16,17,21,31,32,33,35,36,38,41,42,44,45)
+```
+
+```{r}
+station_useful <- station[,usefulnames]
+dim(station_useful)
+```
+
+```{r}
+names(station_useful)
+```
+
+```{r}
+simplenames <- c(2,3,6,41,42,44,45)
+station_simple <- station[,simplenames]
+dim(station_simple)
+```
+
+```{r}
+names(station_simple)
+```
+
+```{r}
+save(station_simple,file="D:\\R\\packages\\Mreport\\data-raw\\station_simple.Rdata")
+```
+
+```{r}
+save(station_useful,file="D:\\R\\packages\\Mreport\\data-raw\\station_useful.Rdata")
+```
+
+## 2. line
+
+```{r}
+lin_G <- read.csv("D:\\data\\sx_raw\\基础数据\\路线信息\\国道.csv",stringsAsFactors = F)
+dim(lin_G)
+```
+
+```{r}
+names(lin_G)
+```
+
+```{r}
+lin_S <- read.csv("D:\\data\\sx_raw\\基础数据\\路线信息\\省道.csv",stringsAsFactors = F)
+dim(lin_S)
+```
+
+```{r}
+names(lin_S)
+```
+
+```{r}
+line <- rbind(lin_G,lin_S)
+dim(line)
+```
+
+```{r}
+line <- line[,-c(1,7)]
+names(line)
+```
+
+```{r}
+save(line,file="D:\\R\\packages\\Mreport\\data-raw\\line.Rdata")
+```
+
+## 3. sample database
+
+
