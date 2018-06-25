@@ -12,7 +12,7 @@ handle_selectindex <- function(database,samplename){
 }
 
 #' @export
-handle_splitatts <- function(dfatts,attname,startpoint){
+handle_splitatts <- function(stationatts,attname,startpoint){
   x <- lapply(station_atts, stringr::str_subset,attname)
   x <- lapply(x, stringr::str_sub,startpoint,-2)
   x <- as.matrix(x)
@@ -29,4 +29,20 @@ handle_mergeplot <- function(samplebase,stationplot){
              all.x = T)
   names(x)[1:2] <- c("popup","type")
   return(x)
+}
+
+#' @export
+handle_mergeline <- function(jd,stationline){
+  df <- merge(jd,stationline,by="index")
+  return(df)
+}
+
+#' @export
+handle_mergesample <- function(jd,samplebase){
+  samplenames <- names(samplebase)
+  for (i in samplenames) {
+    jd <- merge(jd,sample_base[[i]],by = "index", all.x = TRUE)
+    names(jd)[length(jd)] <- i
+  }
+  return(jd)
 }
