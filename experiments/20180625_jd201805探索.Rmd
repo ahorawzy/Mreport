@@ -37,13 +37,21 @@ jd201805s <- select_atts(jd201805)
 jd201805all <- handle_mergeline(jd201805s,station_line)
 ```
 
-```{r}
-names(jd201805all)
-```
 
 ```{r}
 jd <- handle_mergesample(jd201805all,sample_base)
 names(jd)
 ```
 
+```{r}
+arrange(aggregate(cars~roadhub,data=jd,FUN = mean),cars)
+```
+
+```{r}
+arrange(aggregate(cars~province,data=jd,FUN = mean),cars)
+```
+
+```{r}
+arrange(aggregate(passenger_cars~roadhub,data=jd,FUN = mean),cars)
+```
 
