@@ -13,6 +13,7 @@ Imports: leaflet,
     grDevices,
     wesanderson,
     stringr,
-    dplyr
+    dplyr,
+    plyr
 Depends: leafletCN
 RoxygenNote: 6.0.1
