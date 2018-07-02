@@ -97,7 +97,7 @@ caculate_frecarsmean(jdnew,"citygroup")
 ### 封装柱状图绘制函数
 
 ```{r}
-geo_boxplot(x,xangle = 15,xlab="城市群",ylab="月均日")
+gg_boxplot(x,xangle = 15,xlab="城市群",ylab="月均日")
 ```
 
 

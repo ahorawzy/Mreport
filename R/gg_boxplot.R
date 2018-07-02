@@ -1,5 +1,5 @@
 #' @export
-geo_boxplot <- function(calcwmean,xangle=0,xlabname=FALSE,ylabname=FALSE){
+gg_boxplot <- function(calcwmean,xangle=0,xlabname=FALSE,ylabname=FALSE){
   x_factor <- factor(as.integer(rownames(calcwmean)),labels = calcwmean[[1]])
   y <- ggplot2::ggplot(data=x,ggplot2::aes(x=x_factor,y=Wmean))+
     ggplot2::geom_bar(fill="steelblue",stat = "identity")+
