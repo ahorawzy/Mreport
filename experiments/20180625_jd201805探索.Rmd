@@ -11,6 +11,7 @@ options(stringsAsFactors = F)
 
 ```{r}
 library(Mreport)
+library(ggplot2)
 ```
 
 ```{r}
@@ -48,10 +49,28 @@ arrange(aggregate(cars~roadhub,data=jd,FUN = mean),cars)
 ```
 
 ```{r}
-arrange(aggregate(cars~province,data=jd,FUN = mean),cars)
+arrange(aggregate(cars~airport,data=jd,FUN = mean),cars)
 ```
 
 ```{r}
-arrange(aggregate(passenger_cars~roadhub,data=jd,FUN = mean),cars)
+arrange(aggregate(cars~vertical10,data=jd,FUN = mean),cars)
 ```
+
+```{r}
+arrange(aggregate(cars~citygroup,data=jd,FUN = mean),cars)
+```
+
+```{r}
+arrange(aggregate(cars~bigcityio,data=jd,FUN = mean),cars)
+```
+
+```{r}
+x <- arrange(aggregate(cars~province,data=jd,FUN = mean),cars);x
+```
+
+```{r}
+arrange(aggregate(crowd~citygroup,data=jd,FUN = mean),crowd)
+```
+
+
 
