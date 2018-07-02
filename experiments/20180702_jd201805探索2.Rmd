@@ -1,0 +1,103 @@
+---
+title: "20180702_jd201805try"
+author: "wzy"
+date: "2018年7月2日"
+output: html_document
+---
+
+
+```{r}
+options(stringsAsFactors = F)
+```
+
+```{r}
+library(Mreport)
+library(ggplot2)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r}
+jd201805 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jd201805)
+```
+
+```{r}
+jd201805 <- caculate_equivalent(jd201805)
+```
+
+```{r}
+jd201805s <- select_atts(jd201805)
+```
+
+
+```{r}
+jd201805all <- handle_mergeline(jd201805s,station_line)
+```
+
+
+```{r}
+jd <- handle_mergesample(jd201805all,sample_base)
+names(jd)
+```
+
+### 筛选出连续式交调站的国省高速、普通公路为jdnew
+
+```{r}
+jdnew <- jd[jd$index %in% station_use,]
+dim(jdnew)
+```
+
+### 对比加权平均与普通平均
+
+```{r}
+x_wmean <- ddply(jdnew,c("citygroup"),summarise,Wmean_cars=weighted.mean(cars,w=mileage))
+x_wmean <- x_wmean[order(x_wmean$Wmean_cars),]
+rownames(x_wmean) <- 1:nrow(x_wmean)
+x_wmean <- na.omit(x_wmean);x_wmean
+```
+
+```{r}
+x_factor <- factor(as.integer(rownames(x_wmean)),labels = x_wmean$citygroup)
+```
+
+```{r}
+x_mean <- ddply(jdnew,c("citygroup"),summarise,mean_cars=weighted.mean(cars))
+x_mean <- x_mean[order(x_mean$mean_cars),];x_mean
+```
+
+有一定的差异。总体来说加权的偏小。
+
+### 柱状图
+
+```{r}
+ggplot(data=x_wmean,aes(x=x_factor,y=Wmean_cars))+
+  geom_bar(fill="steelblue",stat = "identity")+
+  theme(axis.text.x = element_text(size=10,angle = 15))+
+  xlab("城市群")+ylab("加权平均月均日交通量")
+```
+
+### 将分类求加权平均函数封装
+
+```{r}
+caculate_carsmean(jdnew,"citygroup")
+```
+
+```{r}
+caculate_passcarsmean(jdnew,"citygroup")
+```
+
+```{r}
+caculate_frecarsmean(jdnew,"citygroup")
+```
+
+### 封装柱状图绘制函数
+
+```{r}
+geo_boxplot(x,xangle = 15,xlab="城市群",ylab="月均日")
+```
+
+
