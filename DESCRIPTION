@@ -12,6 +12,7 @@ LazyData: true
 Imports: leaflet,
     grDevices,
     wesanderson,
-    stringr
+    stringr,
+    dplyr
 Depends: leafletCN
 RoxygenNote: 6.0.1
