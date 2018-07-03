@@ -13,6 +13,7 @@ load_base <- function(){
   load_raw("station_line")
   load_raw("station_use")
   load_raw("line")
+  load_raw("roadlevel")
 }
 
 #' @export
