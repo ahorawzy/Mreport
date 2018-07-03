@@ -2,6 +2,9 @@
 
 export(caculate_carsmean)
 export(caculate_frecarsmean)
+export(caculate_level_carsmean)
+export(caculate_level_frecarsmean)
+export(caculate_level_passcarsmean)
 export(caculate_passcarsmean)
 export(geo_pointplot)
 export(gg_boxplot)
