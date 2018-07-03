@@ -1,0 +1,251 @@
+---
+title: "20180703_按等级分开和同比计算设计"
+author: "wzy"
+date: "2018年7月3日"
+output: html_document
+---
+
+本实验任务是：
+
+1. 尝试按公路等级分开计算
+2. 设计同比计算模式
+
+# 1. 首先回顾前两天实验
+
+## 1.1 数据准备
+
+```{r}
+options(stringsAsFactors = FALSE)
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r}
+ls()
+```
+
+
+```{r}
+jd201805 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jd201805)
+```
+
+当量计算
+
+```{r}
+jd201805 <- caculate_equivalent(jd201805)
+```
+
+筛选属性
+
+```{r}
+jd201805s <- select_atts(jd201805)
+```
+
+合并线路
+
+```{r}
+jd201805all <- handle_mergeline(jd201805s,station_line)
+```
+
+合并样本库
+
+```{r}
+jd <- handle_mergesample(jd201805all,sample_base)
+names(jd)
+```
+
+## 1.2 筛选交调站
+
+筛选出的交调站满足：
+
+1. 连续式交调站；
+2. 行政等级为：国高，普通国道，省高，普通省道
+
+```{r}
+jd05new <- jd[jd$index %in% station_use,]
+#jd05new <- jd
+```
+
+## 1.3 使用封装后的函数计算分组加权平均
+
+### 机动车当量
+
+```{r}
+x <- caculate_carsmean(jd05new,"citygroup");x
+```
+
+```{r}
+class(x)
+```
+
+
+## 1.4 使用封装后函数绘制柱状图
+
+```{r}
+caculate_carsmean(jd05new,"citygroup") %>% 
+  gg_boxplot(xangle = 15,xlab="城市群",ylab="月均日机动车当量加权平均")
+```
+
+```{r}
+caculate_passcarsmean(jd05new,"citygroup") %>% 
+  gg_boxplot(xangle = 15,xlab="城市群",ylab="月均日客车当量加权平均")  
+```
+
+```{r}
+caculate_frecarsmean(jd05new,"citygroup") %>% 
+  gg_boxplot(xangle = 15,xlab="城市群",ylab="月均日货车当量加权平均")  
+```
+
+至此前两次实验的内容回顾完毕，开始今天的实验。
+
+# 2. 开始今天的实验
+
+## 2.1 区分国省道的计算
+
+### 将行政等级合并到分析数据中
+
+```{r}
+names(station_useful)
+```
+
+```{r}
+roadlevel <- station_useful[,c(1,5)]
+names(roadlevel) <- c("index","level")
+```
+
+```{r}
+unique(roadlevel$level)
+```
+
+```{r}
+dim(jd05new)
+```
+
+
+```{r}
+jd201805new <- merge(jd05new,roadlevel,by="index",all.x = T)
+dim(jd201805new)
+```
+
+```{r}
+names(jd201805new)
+```
+
+合并完成
+
+### 分组尝试
+
+```{r}
+ddply(jd201805new,c("citygroup","level"),summarise,
+      Wmean = weighted.mean(freight_cars,w=mileage)) %>% 
+  na.omit() %>% dcast(citygroup~level)
+```
+
+新定义了citygroup2样本库，将“长三角，海峡西岸”和“珠三角，海峡西岸”合并到“海峡西岸”
+
+```{r}
+ddply(jd201805new,c("citygroup2","level"),summarise,
+      Wmean = weighted.mean(freight_cars,w=mileage)) %>% 
+  na.omit() %>% dcast(citygroup2~level)
+```
+
+```{r}
+caculate_frecarsmean(jd201805new,"citygroup2")
+```
+
+
+```{r}
+ddply(jd201805new,c("threestrategy","level"),summarise,
+      Wmean = weighted.mean(freight_cars,w=mileage)) %>% 
+  na.omit() %>% dcast(threestrategy~level)
+```
+
+```{r}
+ddply(jd201805new,c("roadhub","level"),summarise,
+      Wmean = weighted.mean(freight_cars,w=mileage)) %>% 
+  na.omit() %>% dcast(roadhub~level)
+```
+
+### 封装函数
+
+```{r}
+caculate_level_carsmean(jd201805new,"citygroup2")
+```
+
+```{r}
+caculate_level_passcarsmean(jd201805new,"citygroup2")
+```
+
+珠三角普通省道值被极大值所干扰
+
+```{r}
+caculate_level_frecarsmean(jd201805new,"citygroup2")
+```
+
+封装完成
+
+## 2.2 环比比较
+
+环比是指2018年5月比2017年5月，由于暂时没有2017年5月数据，而且此处设计计算框架时也用不到，所以可以用非加权平均数模拟2017年5月数据，由此开发环比计算框架。
+
+### 尝试
+
+```{r}
+x201705 <- ddply(jd201805new,c("citygroup2","level"),summarise,
+      Wmean = mean(cars)) %>% 
+  na.omit() %>% dcast(citygroup2~level)
+x201705
+```
+
+```{r}
+x201805 <- caculate_level_carsmean(jd201805new,"citygroup2")
+x201805
+```
+
+```{r}
+yearratio <- function(nowdf,thendf){
+  x <- nowdf
+  for (i in 2:length(x)) {
+    x[[i]] <- nowdf[[i]]/thendf[[i]]
+  }
+  return(x)
+}
+```
+
+```{r}
+yearratio(x201805,x201705)
+```
+
+### 封装到包
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
