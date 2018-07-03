@@ -177,7 +177,7 @@ ddply(jd201805new,c("roadhub","level"),summarise,
   na.omit() %>% dcast(roadhub~level)
 ```
 
-### 封装函数
+### 封装到包
 
 ```{r}
 caculate_level_carsmean(jd201805new,"citygroup2")
@@ -229,6 +229,9 @@ yearratio(x201805,x201705)
 
 ### 封装到包
 
+```{r}
+caculate_yearratio(x201805,x201705)
+```
 
 
 
