@@ -1,6 +1,6 @@
 #' @export
 caculate_carsmean <- function(jd,attsname,na.rm = T){
-  x_wmean <- plyr::ddply(jd,attsname,summarise,
+  x_wmean <- plyr::ddply(jd,attsname,plyr::summarise,
                          Wmean = weighted.mean(cars,w=mileage))
   x_wmean <- x_wmean[order(x_wmean$Wmean),]
   if (na.rm == T) {
@@ -12,7 +12,7 @@ caculate_carsmean <- function(jd,attsname,na.rm = T){
 
 #' @export
 caculate_passcarsmean <- function(jd,attsname,na.rm = T){
-  x_wmean <- plyr::ddply(jd,attsname,summarise,
+  x_wmean <- plyr::ddply(jd,attsname,plyr::summarise,
                          Wmean = weighted.mean(passenger_cars,w=mileage))
   x_wmean <- x_wmean[order(x_wmean$Wmean),]
   if (na.rm == T) {
@@ -24,7 +24,7 @@ caculate_passcarsmean <- function(jd,attsname,na.rm = T){
 
 #' @export
 caculate_frecarsmean <- function(jd,attsname,na.rm = T){
-  x_wmean <- plyr::ddply(jd,attsname,summarise,
+  x_wmean <- plyr::ddply(jd,attsname,plyr::summarise,
                          Wmean = weighted.mean(freight_cars,w=mileage))
   x_wmean <- x_wmean[order(x_wmean$Wmean),]
   if (na.rm == T) {
