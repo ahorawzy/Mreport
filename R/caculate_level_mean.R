@@ -5,7 +5,7 @@ caculate_level_carsmean <- function(jd,attsname,na.rm = T){
   if (na.rm == T) {
     x_wmean <- na.omit(x_wmean)
   }
-  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x[["level"]])
+  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x_wmean[["level"]])
   names(x_wmean)[1] <- attsname
   return(x_wmean)
 }
@@ -17,7 +17,7 @@ caculate_level_passcarsmean <- function(jd,attsname,na.rm = T){
   if (na.rm == T) {
     x_wmean <- na.omit(x_wmean)
   }
-  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x[["level"]])
+  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x_wmean[["level"]])
   names(x_wmean)[1] <- attsname
   return(x_wmean)
 }
@@ -29,7 +29,7 @@ caculate_level_frecarsmean <- function(jd,attsname,na.rm = T){
   if (na.rm == T) {
     x_wmean <- na.omit(x_wmean)
   }
-  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x[["level"]])
+  x_wmean <- reshape2::dcast(x_wmean,x_wmean[[attsname]]~x_wmean[["level"]])
   names(x_wmean)[1] <- attsname
   return(x_wmean)
 }
