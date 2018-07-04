@@ -1,0 +1,292 @@
+---
+title: "20180704_2018骞<b4>6鏈堟湀鎶ュ垎鏋<90>2"
+author: "wzy"
+date: "2018骞<b4>7鏈<88>4鏃<a5>"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F)
+```
+
+
+本实验主要任务是：
+
+1. 导入2017年6月数据，做出同比比较。
+2. 研究分日该怎么分析。
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+### 2018年6月
+
+```{r include=FALSE}
+jd201806 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06.csv")
+dim(jd201806)
+```
+
+```{r include=FALSE}
+jd201806 <- caculate_equivalent(jd201806)
+jd201806 <- select_atts(jd201806)
+jd201806 <- handle_mergeline(jd201806,station_line)
+jd201806 <- handle_mergesample(jd201806,sample_base)
+jd201806 <- merge(jd201806,roadlevel,by="index",all.x = T)
+dim(jd201806)
+```
+
+```{r include=FALSE}
+jd201806s <- subset(jd201806,index %in% station_use)
+dim(jd201806s)
+```
+
+### 2018年5月
+
+```{r include=FALSE}
+jd201805 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jd201805)
+```
+
+```{r include=FALSE}
+jd201805 <- caculate_equivalent(jd201805)
+jd201805 <- select_atts(jd201805)
+jd201805 <- handle_mergeline(jd201805,station_line)
+jd201805 <- handle_mergesample(jd201805,sample_base)
+jd201805 <- merge(jd201805,roadlevel,by="index",all.x = T)
+dim(jd201805)
+```
+
+```{r include=FALSE}
+jd201805s <- subset(jd201805,index %in% station_use)
+dim(jd201805s)
+```
+
+### 2017年6月
+
+```{r include=FALSE}
+jd201706 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_06.csv")
+dim(jd201706)
+```
+
+```{r include=FALSE}
+jd201706 <- caculate_equivalent(jd201706)
+jd201706 <- select_atts(jd201706)
+jd201706 <- handle_mergeline(jd201706,station_line)
+jd201706 <- handle_mergesample(jd201706,sample_base)
+jd201706 <- merge(jd201706,roadlevel,by="index",all.x = T)
+dim(jd201706)
+```
+
+```{r include=FALSE}
+jd201706s <- subset(jd201706,index %in% station_use)
+dim(jd201706s)
+```
+
+## 1. 基础数据解释
+
+所使用交调站原则：
+
+1. 本月有数据（并在交调系统中可下载）的站点；
+1. 连续式站点；
+2. 道路等级为国家级高速路、省级高速路，普通国道，普通省道
+
+所使用的各省分等级交调站数目如下：
+
+```{r}
+table(jd201806s$province,jd201806s$level)
+```
+
+## 2. 总体分析
+
+### 2.1 机动车当量
+
+#### 本月
+
+```{r}
+(total1806cars <- ddply(jd201806s,"level",summarise,Wmean = weighted.mean(cars,w=mileage)))
+```
+
+#### 同比
+
+```{r}
+total1706cars <- ddply(jd201706s,"level",summarise,Wmean = weighted.mean(cars,w=mileage))
+caculate_increaseratio(total1806cars,total1706cars)
+```
+
+#### 环比
+
+```{r}
+total1805cars <- ddply(jd201805s,"level",summarise,Wmean = weighted.mean(cars,w=mileage))
+caculate_increaseratio(total1806cars,total1805cars)
+```
+
+### 2.2 分等级客车当量
+
+#### 本月
+
+```{r}
+(total1806passcars <- ddply(jd201806s,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage)))
+```
+
+#### 同比
+
+```{r}
+total1706passcars <- ddply(jd201706s,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage))
+caculate_increaseratio(total1806passcars,total1706passcars)
+```
+
+#### 环比
+
+```{r}
+total1805passcars <- ddply(jd201805s,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage))
+caculate_increaseratio(total1806passcars,total1805passcars)
+```
+
+### 2.3 分等级货车当量
+
+#### 本月
+
+```{r}
+(total1806frecars <- ddply(jd201806s,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage)))
+```
+
+#### 同比
+
+```{r}
+total1706frecars <- ddply(jd201706s,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage))
+caculate_increaseratio(total1806frecars,total1706frecars)
+```
+
+#### 环比
+
+```{r}
+total1805frecars <- ddply(jd201805s,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage))
+caculate_increaseratio(total1806frecars,total1805frecars)
+```
+
+## 3. 分省分析
+
+### 3.1 分等级机动车
+
+#### 本月
+
+```{r}
+(province1806cars <- caculate_level_carsmean(jd201806s,"province"))
+```
+
+\```{r}
+caculate_carsmean(jd201806s,"province") %>% 
+geojsonMap(mapName = "China")
+\```
+
+#### 同比
+
+```{r}
+province1706cars <- caculate_level_carsmean(jd201706s,"province")
+caculate_increaseratio(province1806cars,province1706cars)
+```
+
+#### 环比
+
+```{r}
+province1805cars <- caculate_level_carsmean(jd201805s,"province")
+caculate_increaseratio(province1806cars,province1805cars)
+```
+
+## 4. 城市群分析
+
+### 4.1 分等级机动车
+
+#### 本月
+
+```{r}
+(citygroup1806 <- caculate_level_carsmean(jd201806s,"citygroup2"))
+```
+
+#### 同比
+
+```{r}
+citygroup1706 <- caculate_level_carsmean(jd201706s,"citygroup2")
+caculate_increaseratio(citygroup1806,citygroup1706)
+```
+
+#### 环比
+
+```{r}
+citygroup1805 <- caculate_level_carsmean(jd201805s,"citygroup2")
+caculate_increaseratio(citygroup1806,citygroup1805)
+```
+
+## 5. 国家公路运输枢纽分析
+
+### 5.1 分等级机动车
+
+#### 本月
+
+```{r}
+(roadhub1806 <- caculate_level_carsmean(jd = jd201806s,attsname = "roadhub"))
+```
+
+#### 同比
+
+```{r}
+roadhub1706 <- caculate_level_carsmean(jd = jd201706s,attsname = "roadhub")
+caculate_increaseratio(roadhub1806,roadhub1706)
+```
+
+#### 环比
+
+```{r}
+roadhub1805 <- caculate_level_carsmean(jd = jd201805s,attsname = "roadhub")
+caculate_increaseratio(roadhub1806,roadhub1805)
+```
+
+## 6. 通道分析
+
+### 6.1 十横通道
+
+#### 本月
+
+```{r}
+(horizon1806 <- caculate_carsmean(jd = jd201806s,attsname = "horizon10"))
+```
+
+#### 同比
+
+```{r}
+horizon1706 <- caculate_carsmean(jd = jd201706s,attsname = "horizon10")
+caculate_increaseratio(horizon1806,horizon1706)
+```
+
+#### 环比
+
+```{r}
+horizon1805 <- caculate_carsmean(jd = jd201805s,attsname = "horizon10")
+caculate_increaseratio(horizon1805,horizon1706)
+```
+
+
+
+
+
