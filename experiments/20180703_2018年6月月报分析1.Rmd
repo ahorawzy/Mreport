@@ -1,0 +1,176 @@
+---
+title: "20180703_2018年6月月报分析1"
+author: "wzy"
+date: "2018年7月3日"
+output: html_document
+---
+
+本实验初步探索6月数据
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list=ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+### 6月数据
+
+```{r}
+jd201806 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06.csv")
+dim(jd201806)
+```
+
+当量计算，筛选属性，合并线路，合并样本库
+
+```{r}
+jd201806 <- caculate_equivalent(jd201806)
+jd201806 <- select_atts(jd201806)
+jd201806 <- handle_mergeline(jd201806,station_line)
+jd201806 <- handle_mergesample(jd201806,sample_base)
+jd201806 <- merge(jd201806,roadlevel,by="index",all.x = T)
+dim(jd201806)
+```
+
+筛选交调站
+
+```{r}
+jd201806s <- subset(jd201806,index %in% station_use)
+dim(jd201806s)
+```
+
+### 5月数据
+
+```{r}
+jd201805 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jd201805)
+```
+
+当量计算，筛选属性，合并线路，合并样本库
+
+```{r}
+jd201805 <- caculate_equivalent(jd201805)
+jd201805 <- select_atts(jd201805)
+jd201805 <- handle_mergeline(jd201805,station_line)
+jd201805 <- handle_mergesample(jd201805,sample_base)
+jd201805 <- merge(jd201805,roadlevel,by="index",all.x = T)
+dim(jd201805)
+```
+
+筛选交调站
+
+```{r}
+jd201805s <- subset(jd201805,index %in% station_use)
+dim(jd201805s)
+```
+
+## 分组计算
+
+### 城市群
+
+```{r}
+citygroup201806 <- caculate_level_carsmean(jd201806s,"citygroup2")
+citygroup201806
+```
+
+```{r}
+caculate_carsmean(jd201806s,"citygroup2") %>% 
+  gg_boxplot(xangle = 0,xlabname = "城市群",ylabname="6月机动车平均交通量")
+```
+
+```{r}
+citygroup201805 <- caculate_level_carsmean(jd201805s,"citygroup2")
+citygroup201805
+```
+
+同比
+
+```{r}
+caculate_yearratio(citygroup201806,citygroup201805[-5,])
+```
+
+### 十横通道
+
+```{r}
+caculate_carsmean(jd201806s,"horizon10")
+```
+
+### 十纵通道
+
+```{r}
+caculate_carsmean(jd201806s,"vertical10")
+```
+
+### 港口集疏运通道
+
+```{r}
+(portroad201806 <- caculate_frecarsmean(jd201806s,"portroad")) %>% tail(10)
+```
+
+```{r}
+(portroad201805 <- caculate_frecarsmean(jd201805s,"portroad")) %>% tail(10)
+```
+
+```{r}
+caculate_yearratio(portroad201806,portroad201805)
+```
+
+### 大城市出入口
+
+```{r}
+(bigcityio201805 <- caculate_frecarsmean(jd201805s,"bigcityio")) %>% tail(10)
+```
+
+```{r}
+(bigcityio201806 <- caculate_frecarsmean(jd201806s,"bigcityio")) %>% tail(10)
+```
+
+```{r}
+caculate_yearratio(bigcityio201806,bigcityio201805) %>% tail(10)
+```
+
+### 机场
+
+```{r}
+(airport201806 <- caculate_carsmean(jd201806s,"airport")) %>% tail(10)
+```
+
+```{r}
+(airport201805 <- caculate_carsmean(jd201805s,"airport")) %>% tail(10)
+```
+
+```{r}
+caculate_yearratio(airport201806,airport201805)
+```
+
+### 旅游景区
+
+```{r}
+(scenery201806 <- caculate_passcarsmean(jd201806s,"scenery"))  %>% tail(10)
+```
+
+```{r}
+(scenery201805 <- caculate_passcarsmean(jd201805s,"scenery"))  %>% tail(10)
+```
+
+```{r}
+caculate_yearratio(scenery201806,scenery201805)
+```
+
+
