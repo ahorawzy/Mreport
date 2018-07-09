@@ -1,0 +1,445 @@
+---
+title: "20180709_6月报分析"
+author: "wzy"
+date: "2018年7月9日"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F)
+```
+
+本实验的主要任务是：
+
+根据7月4日的实验，建立通用化分析模板，并进一步分析，为月报分析提供材料。
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+### 2018年6月
+
+```{r include=FALSE}
+jdnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06.csv")
+dim(jdnew)
+```
+
+```{r include=FALSE}
+jdnew <- caculate_equivalent(jdnew)
+jdnew <- select_atts(jdnew)
+jdnew <- handle_mergeline(jdnew,station_line)
+jdnew <- handle_mergesample(jdnew,sample_base)
+jdnew <- merge(jdnew,roadlevel,by="index",all.x = T)
+dim(jdnew)
+```
+
+```{r include=FALSE}
+jdnews <- subset(jdnew,index %in% station_use)
+dim(jdnews)
+```
+
+### 2018年5月
+
+```{r include=FALSE}
+jdlast <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_05.csv")
+dim(jdlast)
+```
+
+```{r include=FALSE}
+jdlast <- caculate_equivalent(jdlast)
+jdlast <- select_atts(jdlast)
+jdlast <- handle_mergeline(jdlast,station_line)
+jdlast <- handle_mergesample(jdlast,sample_base)
+jdlast <- merge(jdlast,roadlevel,by="index",all.x = T)
+dim(jdlast)
+```
+
+```{r include=FALSE}
+jdlasts <- subset(jdlast,index %in% station_use)
+dim(jdlasts)
+```
+
+### 2017年6月
+
+```{r include=FALSE}
+jdprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_06.csv")
+dim(jdprevious)
+```
+
+```{r include=FALSE}
+jdprevious <- caculate_equivalent(jdprevious)
+jdprevious <- select_atts(jdprevious)
+jdprevious <- handle_mergeline(jdprevious,station_line)
+jdprevious <- handle_mergesample(jdprevious,sample_base)
+jdprevious <- merge(jdprevious,roadlevel,by="index",all.x = T)
+dim(jdprevious)
+```
+
+```{r include=FALSE}
+jdpreviouss <- subset(jdprevious,index %in% station_use)
+dim(jdpreviouss)
+```
+
+### 端午数据
+
+## 1. 基础数据解释
+
+所使用交调站原则：
+
+1. 本月有数据（并在交调系统中可下载）的站点；
+1. 连续式站点；
+2. 道路等级为国家级高速路、省级高速路，普通国道，普通省道
+
+所使用的各省分等级交调站数目如下：
+
+```{r}
+table(jdnews$province,jdnews$level) %>% kable()
+```
+
+## 2. 总体运行态势分析
+
+### 2.1 机动车当量
+
+#### 本月
+
+```{r}
+(totalnewcars <- ddply(jdnews,"level",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% 
+  kable()
+```
+
+#### 同比
+
+```{r}
+totalpreviouscars <- ddply(jdpreviouss,"level",summarise,Wmean = weighted.mean(cars,w=mileage))
+caculate_increaseratio(totalnewcars,totalpreviouscars) %>% kable()
+```
+
+#### 环比
+
+```{r}
+totallastcars <- ddply(jdlasts,"level",summarise,Wmean = weighted.mean(cars,w=mileage))
+caculate_increaseratio(totalnewcars,totallastcars) %>% kable()
+```
+
+### 2.2 分等级客车当量
+
+#### 本月
+
+```{r}
+(totalnewpasscars <- ddply(jdnews,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage))) %>% kable()
+```
+
+#### 同比
+
+```{r}
+totalpreviouspasscars <- ddply(jdpreviouss,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage))
+caculate_increaseratio(totalnewpasscars,totalpreviouspasscars) %>% kable()
+```
+
+#### 环比
+
+```{r}
+totallastpasscars <- ddply(jdlasts,"level",summarise,Wmean = weighted.mean(passenger_cars,w=mileage))
+caculate_increaseratio(totalnewpasscars,totallastpasscars) %>% kable()
+```
+
+### 2.3 分等级货车当量
+
+#### 本月
+
+```{r}
+(totalnewfrecars <- ddply(jdnews,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage))) %>% kable()
+```
+
+#### 同比
+
+```{r}
+totalpreviousfrecars <- ddply(jdpreviouss,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage))
+caculate_increaseratio(totalnewfrecars,totalpreviousfrecars) %>% kable()
+```
+
+#### 环比
+
+```{r}
+totallastfrecars <- ddply(jdlasts,"level",summarise,Wmean = weighted.mean(freight_cars,w=mileage))
+caculate_increaseratio(totalnewfrecars,totallastfrecars) %>% kable()
+```
+
+## 3. 分省分析
+
+### 3.1 分等级机动车
+
+#### 本月
+
+```{r, results="asis"}
+provincenewcars <- caculate_level_carsmean(jdnews,"province")
+kable(provincenewcars)
+```
+
+```{r}
+caculate_carsmean(jdnews,"province") %>% 
+geojsonMap(mapName = "China")
+```
+
+#### 同比
+
+```{r}
+provincepreviouscars <- caculate_level_carsmean(jdpreviouss,"province")
+caculate_increaseratio(provincenewcars,provincepreviouscars) %>% kable()
+```
+
+#### 环比
+
+```{r}
+provincelastcars <- caculate_level_carsmean(jdlasts,"province")
+caculate_increaseratio(provincenewcars,provincelastcars) %>% kable()
+```
+
+## 4. 城市群分析
+
+站点在各个城市群的分布如下：
+
+```{r}
+t <- merge(station_plot,sample_base$citygroup2,by.x = "popup",by.y = "index",all.y = T)
+names(t)[5] <- "type"
+geo_pointplot(t,na.rm=T,type = T)
+```
+
+
+### 4.1 分等级机动车
+
+#### 本月
+
+```{r}
+(citygroupnew <- caculate_level_carsmean(jdnews,"citygroup2")) %>% kable()
+```
+
+#### 同比
+
+```{r}
+citygroupprevious <- caculate_level_carsmean(jdpreviouss,"citygroup2")
+caculate_increaseratio(citygroupnew,citygroupprevious) %>% kable()
+```
+
+#### 环比
+
+```{r}
+citygrouplast <- caculate_level_carsmean(jdlasts,"citygroup2")
+caculate_increaseratio(citygroupnew,citygrouplast) %>% kable()
+```
+
+## 5. 通道分析
+
+### 5.1 十横通道
+
+十横通道分布如下：
+
+```{r}
+t <- merge(station_plot,sample_base$horizon10,by.x = "popup",by.y = "index",all.y = T)
+names(t)[5] <- "type"
+geo_pointplot(t,na.rm=T,type = T)
+```
+
+
+#### 本月
+
+```{r}
+(horizonnew <- caculate_carsmean(jd = jdnews,attsname = "horizon10")) %>% kable()
+```
+
+```{r}
+gg_boxplot(horizonnew,xangle = 15,xlabname = "十横通道",ylabname = "平均机动车当量")
+```
+
+
+#### 同比
+
+```{r}
+horizonprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "horizon10")
+caculate_increaseratio(horizonnew,horizonprevious) %>% kable()
+```
+
+#### 环比
+
+```{r}
+horizonlast <- caculate_carsmean(jd = jdlasts,attsname = "horizon10")
+caculate_increaseratio(horizonlast,horizonprevious) %>% kable()
+```
+
+### 5.2 十横重点通道
+
+#### 5.2.1 沪昆通道
+
+```{r}
+x <- subset(jdnews,horizon10 == "上海-瑞丽")
+x <- ddply(x,c("horizon10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+#### 5.2.2 路桥通道
+
+```{r}
+x <- subset(jdnews,horizon10 == "连云港-霍尔果斯")
+x <- ddply(x,c("horizon10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+#### 5.2.3 沿江通道
+
+```{r}
+x <- subset(jdnews,horizon10 == "上海-樟木")
+x <- ddply(x,c("horizon10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+### 5.3 十纵通道
+
+十纵通道分布如下：
+
+```{r}
+t <- merge(station_plot,sample_base$vertical10,by.x = "popup",by.y = "index",all.y = T)
+names(t)[5] <- "type"
+geo_pointplot(t,na.rm=T,type = T)
+```
+
+#### 本月
+
+```{r}
+(verticalnew <- caculate_carsmean(jd = jdnews,attsname = "vertical10")) %>% kable()
+```
+
+```{r}
+gg_boxplot(verticalnew,xangle = 15,xlabname = "十横通道",ylabname = "平均机动车当量")
+```
+
+
+#### 同比
+
+```{r}
+verticalprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "vertical10")
+caculate_increaseratio(verticalnew,verticalprevious) %>% kable()
+```
+
+#### 环比
+
+```{r}
+verticallast <- caculate_carsmean(jd = jdlasts,attsname = "vertical10")
+caculate_increaseratio(verticallast,verticalprevious) %>% kable()
+```
+
+### 5.4 十纵重点通道
+
+#### 5.4.1 京沪通道
+
+```{r}
+x <- subset(jdnews,vertical10 == "北京-上海")
+x <- ddply(x,c("vertical10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+#### 5.4.2 沿海通道
+
+```{r}
+x <- subset(jdnews,vertical10 == "同江-三亚")
+x <- ddply(x,c("vertical10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+#### 5.4.3 黑河至港澳台通道
+
+```{r}
+x <- subset(jdnews,vertical10 == "黑河-港澳台")
+x <- ddply(x,c("vertical10","province"),
+                     summarise,Wmean = weighted.mean(cars,w=mileage))
+x <- na.omit(x)
+x %>% kable()
+```
+
+## 6. 疏港公路分析
+
+### 本月
+
+```{r}
+(portroadnew <- caculate_carsmean(jdnews,attsname = "portroad"))
+```
+
+```{r}
+gg_boxplot(portroadnew,xangle = 20,xlabname = "疏港公路",ylabname = "平均机动车当量")
+```
+
+
+### 同比
+
+```{r}
+portroadprevious <- caculate_carsmean(jdprevious,attsname = "portroad")
+caculate_increaseratio(portroadnew,portroadprevious)
+```
+
+### 环比
+
+```{r}
+portroadlast <- caculate_carsmean(jdlasts,attsname = "portroad")
+caculate_increaseratio(portroadnew,portroadlast)
+```
+
+## 7. 端午节专题分析
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
