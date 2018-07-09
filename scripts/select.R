@@ -1,3 +1,8 @@
+#' Select atts and direction
+#'
+#' This function not only select attributes and rename them, but also select
+#' records whose direction is "DuanMian". So the nrow will shrink.
+
 select_atts <- function(df){
   df <- df[df[["行驶方向"]]=="断面",c("观测站编号","观测站名称","观测里程",
                                 "经度","纬度","省级名称","地市名称","区县名称",
