@@ -1,0 +1,149 @@
+---
+title: "201780709_2018年6月月报分析4_专题分析"
+author: "wzy"
+date: "2018年7月9日"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F)
+```
+
+本实验探索分日数据的分析框架
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+### 2018年端午
+
+```{r}
+jddwnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_DuanWu.csv")
+dim(jddwnew)
+```
+
+拆分日期
+
+```{r eval=FALSE}
+x <- strsplit(jddwnew$观测日期,split = "-")
+y <- sapply(x,'[',3)
+jddwnew$日 <- y
+```
+
+```{r}
+jddwnew <- split_day(jddwnew)
+jddwnew <- caculate_equivalent(jddwnew)
+jddwnew <- select_atts_forday(jddwnew)
+jddwnew <- handle_mergeline(jddwnew,station_line)
+jddwnew <- handle_mergesample(jddwnew,sample_base)
+jddwnew <- merge(jddwnew,roadlevel,by="index",all.x = T)
+jddwnew <- subset(jddwnew,index %in% station_use)
+```
+
+### 2017年端午
+
+```{r}
+jddwprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_06_DuanWu.csv")
+dim(jddwprevious)
+```
+
+```{r}
+jddwprevious <- split_day(jddwprevious)
+jddwprevious <- caculate_equivalent(jddwprevious)
+jddwprevious <- select_atts_forday(jddwprevious)
+jddwprevious <- handle_mergeline(jddwprevious,station_line)
+jddwprevious <- handle_mergesample(jddwprevious,sample_base)
+jddwprevious <- merge(jddwprevious,roadlevel,by="index",all.x = T)
+jddwprevious <- subset(jddwprevious,index %in% station_use)
+```
+
+
+## 1. 总体分析
+
+### 1.1 分道路等级
+
+```{r}
+(dwallnewlevel <- ddply(jddwnew,"level",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+```{r}
+(dwallpreviouslevel <- ddply(jddwprevious,"level",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+```{r}
+caculate_increaseratio(dwallnewlevel,dwallpreviouslevel) %>% kable()
+```
+
+### 1.2 分日期
+
+```{r}
+(dwallnewday <- ddply(jddwnew,"day",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+## 2. 分省分析
+
+```{r}
+(dwprovincenew <- caculate_carsmean(jddwnew,"province")) %>% kable()
+```
+
+同比
+
+```{r}
+dwprovinceprevious <- caculate_carsmean(jddwprevious,"province")
+caculate_increaseratio(dwprovincenew,dwprovinceprevious) %>% kable()
+```
+
+## 3. 旅游景区
+
+```{r}
+(dwscenerynew <- caculate_carsmean(jddwnew,"scenery")) %>% kable()
+```
+
+同比
+
+```{r}
+dwsceneryprevious <- caculate_carsmean(jddwprevious,"scenery")
+caculate_increaseratio(dwscenerynew,dwsceneryprevious) %>% kable()
+```
+
+## 4. 大城市出入口
+
+```{r}
+(dwbigcityionew <- caculate_carsmean(jddwnew,"bigcityio")) %>% kable()
+```
+
+```{r}
+dwbigcityioprevious <- caculate_carsmean(jddwprevious,"bigcityio")
+caculate_increaseratio(dwbigcityionew,dwbigcityioprevious) %>% kable()
+```
+
+## 5. 机场
+
+```{r}
+(dwairportnew <- caculate_carsmean(jddwnew,"airport")) %>% kable()
+```
+
+```{r}
+dwairportprevious <- caculate_carsmean(jddwprevious,"airport")
+caculate_increaseratio(dwairportnew,dwairportprevious) %>% kable()
+```
+
