@@ -1,0 +1,87 @@
+---
+title: "20180709_2018骞<b4>6鏈堟湀鎶ュ垎鏋<90>6_G4杞︾ジ"
+author: "wzy"
+date: "2018骞<b4>7鏈<88>9鏃<a5>"
+output:
+  word_document: default
+  html_document: default
+---
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+```{r}
+jdg4_29 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_G4_29.csv")
+dim(jdg4_29)
+```
+
+```{r}
+jdg4_30 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_G4_30.csv")
+dim(jdg4_30)
+```
+
+```{r}
+jdg4_28 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_G4_28.csv")
+dim(jdg4_28)
+```
+
+
+## 29日数据分析
+
+```{r}
+hy28 <- jdg4_28[jdg4_28$地市名称=="衡阳市" & jdg4_28$行驶方向=="断面",]
+hy29 <- jdg4_29[jdg4_29$地市名称=="衡阳市" & jdg4_28$行驶方向=="断面",]
+hy30 <- jdg4_30[jdg4_30$地市名称=="衡阳市" & jdg4_28$行驶方向=="断面",]
+```
+
+```{r}
+x28 <- ddply(hy28,"小时",summarise,mean(机动车当量))
+x28$小时 <- paste("28-",x28$小时,sep = "")
+```
+
+```{r}
+x29 <- ddply(hy29,"小时",summarise,mean(机动车当量))
+x29$小时 <- paste("29-",x29$小时,sep = "")
+```
+
+```{r}
+x30 <- ddply(hy30,"小时",summarise,mean(机动车当量))
+x30$小时 <- paste("30-",x30$小时,sep = "")
+```
+
+```{r}
+x <- rbind(x28,x29,x30);x %>% kable()
+```
+
+
+```{r fig.width=9,fig.height=5}
+x <- rbind(x28,x29,x30)
+names(x) <- c("day","Wmean")
+x$day <- 1:nrow(x)
+ggplot(x,aes(x=day,y=Wmean))+geom_line(colour="steelblue")+geom_point(colour="steelblue")+
+  scale_x_continuous(breaks = seq(0,72,4))+
+  geom_point(aes(x=45,y=2390.333),colour="red",size=3)+
+  geom_point(aes(x=58,y=1362.333),colour="green",size=3)+
+  xlab("时刻")+ylab("平均机动车当量")
+```
+
