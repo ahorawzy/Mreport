@@ -1,0 +1,73 @@
+---
+title: "20180709_2018年6月月报分析5_广东暴雨专题"
+author: "wzy"
+date: "2018年7月9日"
+output: html_document
+---
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+```{r}
+jdgd <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_GuangDong.csv")
+dim(jdgd)
+```
+
+```{r}
+jdgd <- split_day(jdgd)
+jdgd <- caculate_equivalent(jdgd)
+jdgd <- select_atts_forday(jdgd)
+jdgd <- handle_mergeline(jdgd,station_line)
+jdgd <- handle_mergesample(jdgd,sample_base)
+jdgd <- merge(jdgd,roadlevel,by="index",all.x = T)
+jdgd <- subset(jdgd,index %in% station_use)
+```
+
+## 1. 分日分析
+
+```{r}
+(gd <- ddply(jdgd,"day",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+```{r}
+gg_boxplot(gd,xlabname = "日期",ylabname = "平均日机动车当量")
+```
+
+6月8日广东暴雨，交通量下降明显。
+
+## 2. 分市分析
+
+```{r}
+jdgd08 <- subset(jdgd,day=="08")
+jdgd01 <- subset(jdgd,day=="01")
+```
+
+```{r}
+(gd08 <- caculate_carsmean(jdgd08,"city"))
+```
+
+```{r}
+gd01 <- caculate_carsmean(jdgd01,"city")
+caculate_increaseratio(gd08,gd01)
+```
+
