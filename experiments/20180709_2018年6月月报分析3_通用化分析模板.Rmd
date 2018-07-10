@@ -3,8 +3,8 @@ title: "20180709_6月报分析"
 author: "wzy"
 date: "2018年7月9日"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r echo=FALSE}
@@ -102,8 +102,6 @@ jdpreviouss <- subset(jdprevious,index %in% station_use)
 dim(jdpreviouss)
 ```
 
-### 端午数据
-
 ## 1. 基础数据解释
 
 所使用交调站原则：
@@ -189,65 +187,178 @@ caculate_increaseratio(totalnewfrecars,totallastfrecars) %>% kable()
 
 ## 3. 分省分析
 
-### 3.1 分等级机动车
+### 3.1 分省总体
 
-#### 本月
+#### 本月总体
+
+```{r}
+caculate_carsmean(jdnews,"province") %>% kable()
+```
+
+```{r}
+caculate_carsmean(jdnews,"province") %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
+                                                    ylabname="月平均日机动车交通量")
+ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\6月分析\\绘图\\省级机动车.jpg",dpi=600)
+```
+
+#### 同比总体
+
+```{r}
+caculate_increaseratio(caculate_carsmean(jdnews,"province"),
+                       caculate_carsmean(jdpreviouss,"province")) %>% kable()
+```
+
+#### 环比总体
+
+```{r}
+caculate_increaseratio(caculate_carsmean(jdnews,"province"),
+                       caculate_carsmean(jdlasts,"province")) %>% kable()
+```
+
+### 3.2 分等级机动车
+
+#### 本月分等级
 
 ```{r, results="asis"}
 provincenewcars <- caculate_level_carsmean(jdnews,"province")
 kable(provincenewcars)
 ```
 
-```{r}
+```{r eval=FALSE}
 caculate_carsmean(jdnews,"province") %>% 
 geojsonMap(mapName = "China")
 ```
 
-#### 同比
+#### 同比分等级
 
 ```{r}
 provincepreviouscars <- caculate_level_carsmean(jdpreviouss,"province")
 caculate_increaseratio(provincenewcars,provincepreviouscars) %>% kable()
 ```
 
-#### 环比
+#### 环比分等级
 
 ```{r}
 provincelastcars <- caculate_level_carsmean(jdlasts,"province")
 caculate_increaseratio(provincenewcars,provincelastcars) %>% kable()
 ```
 
-## 4. 城市群分析
-
-站点在各个城市群的分布如下：
-
-```{r}
-t <- merge(station_plot,sample_base$citygroup2,by.x = "popup",by.y = "index",all.y = T)
-names(t)[5] <- "type"
-geo_pointplot(t,na.rm=T,type = T)
-```
-
-
-### 4.1 分等级机动车
+### 3.3 各省客运车辆
 
 #### 本月
 
 ```{r}
-(citygroupnew <- caculate_level_carsmean(jdnews,"citygroup2")) %>% kable()
+(provincepassnew <- caculate_passcarsmean(jdnews,"province")) %>% kable()
 ```
 
 #### 同比
 
 ```{r}
-citygroupprevious <- caculate_level_carsmean(jdpreviouss,"citygroup2")
-caculate_increaseratio(citygroupnew,citygroupprevious) %>% kable()
+provincepassprevious <- caculate_passcarsmean(jdpreviouss,"province")
+caculate_increaseratio(provincepassnew,provincepassprevious) %>% kable()
 ```
 
 #### 环比
 
 ```{r}
-citygrouplast <- caculate_level_carsmean(jdlasts,"citygroup2")
-caculate_increaseratio(citygroupnew,citygrouplast) %>% kable()
+provincepasslast <- caculate_passcarsmean(jdlasts,"province")
+caculate_increaseratio(provincepassnew,provincepasslast) %>% kable()
+```
+
+### 3.4 各省货运车辆
+
+#### 本月
+
+```{r}
+(provincefrenew <- caculate_frecarsmean(jdnews,"province")) %>% kable()
+```
+
+#### 同比
+
+```{r}
+provincefreprevious <- caculate_frecarsmean(jdpreviouss,"province")
+caculate_increaseratio(provincefrenew,provincefreprevious) %>% kable()
+```
+
+#### 环比
+
+```{r}
+provincefrelast <- caculate_frecarsmean(jdlasts,"province")
+caculate_increaseratio(provincefrenew,provincefrelast) %>% kable()
+```
+
+
+## 4. 城市群分析
+
+站点在各个城市群的分布如下：
+
+```{r eval=FALSE}
+t <- merge(station_plot,sample_base$citygroup2,by.x = "popup",by.y = "index",all.y = T)
+names(t)[5] <- "type"
+geo_pointplot(t,na.rm=T,type = T)
+```
+
+### 4.1 总体
+
+```{r}
+x <- caculate_carsmean(jdnews,"citygroup2")
+```
+
+```{r}
+x1 <- caculate_increaseratio(caculate_carsmean(jdnews,"citygroup2"),
+                       caculate_carsmean(jdpreviouss,"citygroup2"))
+```
+
+```{r}
+x2 <- caculate_increaseratio(caculate_carsmean(jdnews,"citygroup2"),
+                       caculate_carsmean(jdlasts,"citygroup2"))
+```
+
+```{r}
+merge_outcome(x,x1,x2,bywhat = "citygroup2")
+```
+
+
+### 4.2 客车
+
+
+```{r}
+x <- caculate_passcarsmean(jdnews,"citygroup2")
+```
+
+```{r}
+x1 <- caculate_increaseratio(caculate_passcarsmean(jdnews,"citygroup2"),
+                       caculate_passcarsmean(jdpreviouss,"citygroup2"))
+```
+
+```{r}
+x2 <- caculate_increaseratio(caculate_passcarsmean(jdnews,"citygroup2"),
+                       caculate_passcarsmean(jdlasts,"citygroup2"))
+```
+
+```{r}
+merge_outcome(x,x1,x2,bywhat = "citygroup2")
+```
+
+
+### 4.3 货车
+
+```{r}
+x <- caculate_frecarsmean(jdnews,"citygroup2")
+```
+
+```{r}
+x1 <- caculate_increaseratio(caculate_frecarsmean(jdnews,"citygroup2"),
+                       caculate_frecarsmean(jdpreviouss,"citygroup2"))
+```
+
+```{r}
+x2 <- caculate_increaseratio(caculate_frecarsmean(jdnews,"citygroup2"),
+                       caculate_frecarsmean(jdlasts,"citygroup2"))
+```
+
+```{r}
+merge_outcome(x,x1,x2,bywhat = "citygroup2")
 ```
 
 ## 5. 通道分析
@@ -256,37 +367,34 @@ caculate_increaseratio(citygroupnew,citygrouplast) %>% kable()
 
 十横通道分布如下：
 
-```{r}
+```{r eval=FALSE}
 t <- merge(station_plot,sample_base$horizon10,by.x = "popup",by.y = "index",all.y = T)
 names(t)[5] <- "type"
 geo_pointplot(t,na.rm=T,type = T)
 ```
 
-
-#### 本月
-
 ```{r}
-(horizonnew <- caculate_carsmean(jd = jdnews,attsname = "horizon10")) %>% kable()
+horizonnew <- caculate_carsmean(jd = jdnews,attsname = "horizon10")
 ```
 
 ```{r}
 gg_boxplot(horizonnew,xangle = 15,xlabname = "十横通道",ylabname = "平均机动车当量")
 ```
 
-
-#### 同比
-
 ```{r}
 horizonprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "horizon10")
-caculate_increaseratio(horizonnew,horizonprevious) %>% kable()
+x1 <- caculate_increaseratio(horizonnew,horizonprevious)
 ```
-
-#### 环比
 
 ```{r}
 horizonlast <- caculate_carsmean(jd = jdlasts,attsname = "horizon10")
-caculate_increaseratio(horizonlast,horizonprevious) %>% kable()
+x2 <- caculate_increaseratio(horizonlast,horizonprevious)
 ```
+
+```{r}
+merge_outcome(horizonnew,x1,x2,bywhat = "horizon10") %>% kable()
+```
+
 
 ### 5.2 十横重点通道
 
@@ -324,16 +432,15 @@ x %>% kable()
 
 十纵通道分布如下：
 
-```{r}
+```{r eval=FALSE}
 t <- merge(station_plot,sample_base$vertical10,by.x = "popup",by.y = "index",all.y = T)
 names(t)[5] <- "type"
 geo_pointplot(t,na.rm=T,type = T)
 ```
 
-#### 本月
 
 ```{r}
-(verticalnew <- caculate_carsmean(jd = jdnews,attsname = "vertical10")) %>% kable()
+verticalnew <- caculate_carsmean(jd = jdnews,attsname = "vertical10")
 ```
 
 ```{r}
@@ -341,18 +448,18 @@ gg_boxplot(verticalnew,xangle = 15,xlabname = "十横通道",ylabname = "平均�
 ```
 
 
-#### 同比
-
 ```{r}
 verticalprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "vertical10")
-caculate_increaseratio(verticalnew,verticalprevious) %>% kable()
+x1 <- caculate_increaseratio(verticalnew,verticalprevious)
 ```
-
-#### 环比
 
 ```{r}
 verticallast <- caculate_carsmean(jd = jdlasts,attsname = "vertical10")
-caculate_increaseratio(verticallast,verticalprevious) %>% kable()
+x2 <- caculate_increaseratio(verticallast,verticalprevious)
+```
+
+```{r}
+merge_outcome(verticalnew,x1,x2,bywhat = "vertical10") %>% kable()
 ```
 
 ### 5.4 十纵重点通道
@@ -389,10 +496,9 @@ x %>% kable()
 
 ## 6. 疏港公路分析
 
-### 本月
 
 ```{r}
-(portroadnew <- caculate_carsmean(jdnews,attsname = "portroad"))
+(portroadnew <- caculate_carsmean(jdnews,attsname = "portroad")) %>% kable()
 ```
 
 ```{r}
@@ -400,46 +506,17 @@ gg_boxplot(portroadnew,xangle = 20,xlabname = "疏港公路",ylabname = "平均�
 ```
 
 
-### 同比
-
 ```{r}
 portroadprevious <- caculate_carsmean(jdprevious,attsname = "portroad")
-caculate_increaseratio(portroadnew,portroadprevious)
+x1 <- caculate_increaseratio(portroadnew,portroadprevious)
 ```
-
-### 环比
 
 ```{r}
 portroadlast <- caculate_carsmean(jdlasts,attsname = "portroad")
-caculate_increaseratio(portroadnew,portroadlast)
+x2 <- caculate_increaseratio(portroadnew,portroadlast)
 ```
-
-## 7. 端午节专题分析
 
 ```{r}
-
+merge_outcome(portroadnew,x1,x2,bywhat = "portroad") %>% kable()
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
