@@ -85,3 +85,7 @@ ggplot(x,aes(x=day,y=Wmean))+geom_line(colour="steelblue")+geom_point(colour="st
   xlab("时刻")+ylab("平均机动车当量")
 ```
 
+```{r}
+ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\6月分析\\绘图\\G4车祸.png",width=9,height=5,dpi=600)
+```
+
