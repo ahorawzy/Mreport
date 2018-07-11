@@ -1,8 +1,10 @@
 ---
-title: "201780709_2018年6月月报分析4_端午专题分析"
+title: "201780709_2018骞<b4>6鏈堟湀鎶ュ垎鏋<90>4_绔崍涓撻鍒嗘瀽"
 author: "wzy"
-date: "2018年7月9日"
-output: html_document
+date: "2018骞<b4>7鏈<88>9鏃<a5>"
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r echo=FALSE}
@@ -102,48 +104,64 @@ caculate_increaseratio(dwallnewlevel,dwallpreviouslevel) %>% kable()
 ## 2. 分省分析
 
 ```{r}
-(dwprovincenew <- caculate_carsmean(jddwnew,"province")) %>% kable()
+dwprovincenew <- caculate_carsmean(jddwnew,"province")
 ```
-
-同比
 
 ```{r}
 dwprovinceprevious <- caculate_carsmean(jddwprevious,"province")
-caculate_increaseratio(dwprovincenew,dwprovinceprevious) %>% kable()
+x1 <- caculate_increaseratio(dwprovincenew,dwprovinceprevious)
 ```
+
+```{r}
+merge(dwprovincenew,x1,by="province") %>% kable()
+```
+
 
 ## 3. 旅游景区
 
 ```{r}
-(dwscenerynew <- caculate_carsmean(jddwnew,"scenery")) %>% kable()
+dwscenerynew <- caculate_carsmean(jddwnew,"scenery")
 ```
 
 同比
 
 ```{r}
 dwsceneryprevious <- caculate_carsmean(jddwprevious,"scenery")
-caculate_increaseratio(dwscenerynew,dwsceneryprevious) %>% kable()
+x1 <- caculate_increaseratio(dwscenerynew,dwsceneryprevious)
+```
+
+```{r}
+merge(dwscenerynew,x1,by="scenery") %>% kable()
 ```
 
 ## 4. 大城市出入口
 
 ```{r}
-(dwbigcityionew <- caculate_carsmean(jddwnew,"bigcityio")) %>% kable()
+dwbigcityionew <- caculate_carsmean(jddwnew,"bigcityio")
 ```
 
 ```{r}
 dwbigcityioprevious <- caculate_carsmean(jddwprevious,"bigcityio")
-caculate_increaseratio(dwbigcityionew,dwbigcityioprevious) %>% kable()
+x1 <- caculate_increaseratio(dwbigcityionew,dwbigcityioprevious)
 ```
+
+```{r}
+merge(dwbigcityionew,x1,by="bigcityio") %>% kable()
+```
+
 
 ## 5. 机场
 
 ```{r}
-(dwairportnew <- caculate_carsmean(jddwnew,"airport")) %>% kable()
+dwairportnew <- caculate_carsmean(jddwnew,"airport")
 ```
 
 ```{r}
 dwairportprevious <- caculate_carsmean(jddwprevious,"airport")
-caculate_increaseratio(dwairportnew,dwairportprevious) %>% kable()
+x1 <- caculate_increaseratio(dwairportnew,dwairportprevious)
+```
+
+```{r}
+merge(dwairportnew,x1,by="airport") %>% kable()
 ```
 

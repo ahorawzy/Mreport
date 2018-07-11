@@ -1,8 +1,10 @@
 ---
-title: "20180709_2018年6月月报分析5_广东暴雨专题"
+title: "20180709_2018骞<b4>6鏈堟湀鎶ュ垎鏋<90>5_骞夸笢鏆撮洦涓撻"
 author: "wzy"
-date: "2018年7月9日"
-output: html_document
+date: "2018骞<b4>7鏈<88>9鏃<a5>"
+output:
+  word_document: default
+  html_document: default
 ---
 
 ## 环境准备
@@ -50,7 +52,8 @@ jdgd <- subset(jdgd,index %in% station_use)
 ```
 
 ```{r}
-gg_boxplot(gd,xlabname = "日期",ylabname = "平均日机动车当量")
+gg_boxplot(gd,xlabname = "日期",ylabname = "每日机动车当量")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\6月分析\\绘图\\广东6月.png",dpi=600)
 ```
 
 6月8日广东暴雨，交通量下降明显。
@@ -63,11 +66,15 @@ jdgd01 <- subset(jdgd,day=="01")
 ```
 
 ```{r}
-(gd08 <- caculate_carsmean(jdgd08,"city"))
+gd08 <- caculate_carsmean(jdgd08,"city")
 ```
 
 ```{r}
 gd01 <- caculate_carsmean(jdgd01,"city")
-caculate_increaseratio(gd08,gd01)
+x1 <- caculate_increaseratio(gd08,gd01)
+```
+
+```{r}
+merge(gd08,x1,by="city") %>% kable()
 ```
 
