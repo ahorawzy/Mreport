@@ -1,48 +1,47 @@
 #' @export
-handle_extractindex <- function(inputpath){
-  df <- read.csv(inputpath)
-  df_index <- df[,2]
-  return(df_index)
+handle_extractindex <- function(inputpath) {
+    df <- read.csv(inputpath)
+    df_index <- df[, 2]
+    return(df_index)
 }
 
 #' @export
-handle_selectindex <- function(database,samplename){
-  newdf <- database[database[,1] %in% sample_base[[samplename]],]
-  return(newdf)
+handle_selectindex <- function(database, samplename) {
+    newdf <- database[database[, 1] %in% sample_base[[samplename]], ]
+    return(newdf)
 }
 
 #' @export
-handle_splitatts <- function(stationatts,attname,startpoint){
-  x <- lapply(station_atts, stringr::str_subset,attname)
-  x <- lapply(x, stringr::str_sub,startpoint,-2)
-  x <- as.matrix(x)
-  x <- as.data.frame(x)
-  x$V1 <- as.character(x$V1)
-  x$index <- rownames(x)
-  x <- x[x$V1!="character(0)",]
-  return(x)
+handle_splitatts <- function(stationatts, attname, startpoint) {
+    x <- lapply(station_atts, stringr::str_subset, attname)
+    x <- lapply(x, stringr::str_sub, startpoint, -2)
+    x <- as.matrix(x)
+    x <- as.data.frame(x)
+    x$V1 <- as.character(x$V1)
+    x$index <- rownames(x)
+    x <- x[x$V1 != "character(0)", ]
+    return(x)
 }
 
 #' @export
-handle_mergeplot <- function(samplebase,stationplot){
-  x <- merge(samplebase,stationplot,by.x="index",by.y="popup",
-             all.x = T)
-  names(x)[1:2] <- c("popup","type")
-  return(x)
+handle_mergeplot <- function(samplebase, stationplot) {
+    x <- merge(samplebase, stationplot, by.x = "index", by.y = "popup", all.x = T)
+    names(x)[1:2] <- c("popup", "type")
+    return(x)
 }
 
 #' @export
-handle_mergeline <- function(jd,stationline){
-  df <- merge(jd,stationline,by="index")
-  return(df)
+handle_mergeline <- function(jd, stationline) {
+    df <- merge(jd, stationline, by = "index")
+    return(df)
 }
 
 #' @export
-handle_mergesample <- function(jd,samplebase){
-  samplenames <- names(samplebase)
-  for (i in samplenames) {
-    jd <- merge(jd,sample_base[[i]],by = "index", all.x = TRUE)
-    names(jd)[length(jd)] <- i
-  }
-  return(jd)
+handle_mergesample <- function(jd, samplebase) {
+    samplenames <- names(samplebase)
+    for (i in samplenames) {
+        jd <- merge(jd, sample_base[[i]], by = "index", all.x = TRUE)
+        names(jd)[length(jd)] <- i
+    }
+    return(jd)
 }
