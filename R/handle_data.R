@@ -1,16 +1,16 @@
-#' @export
-handle_extractindex <- function(inputpath) {
-    df <- read.csv(inputpath)
-    df_index <- df[, 2]
-    return(df_index)
-}
-
-#' @export
-handle_selectindex <- function(database, samplename) {
-    newdf <- database[database[, 1] %in% sample_base[[samplename]], ]
-    return(newdf)
-}
-
+#' Split attributes from station_atts
+#'
+#' This function helps split attributes from station_atts.Rdata
+#'
+#' File "station_atts.Rdata" is handled by strsplit function from the big-table with all station-attributes.
+#' "station_atts" is a big list. Each element is a station. This function receives attname and startpoint of "("
+#' to extract the content of attributes.
+#'
+#' @param stationatts The list: station_atts.
+#' @param attname The attribute you want to split, like character "Cheng Shi Qun".
+#' @param startpoint The startpoint of the first str behind "(".
+#' @return A dataframe contains 2 columns, "V1" save attributes content, "index" save station_index.
+#'
 #' @export
 handle_splitatts <- function(stationatts, attname, startpoint) {
     x <- lapply(station_atts, stringr::str_subset, attname)
