@@ -23,6 +23,19 @@ handle_splitatts <- function(stationatts, attname, startpoint) {
     return(x)
 }
 
+#' Merge samplebase information and stationplot data.
+#'
+#' This function can merge one attribute from "samplebase" list with "station_plot" dataframe.
+#'
+#' This function aims to quickly plot points samplebase. It can be used before geo_pointplot function.
+#' You can x <- handle_mergeplot(samplebase$citygroup2,station_plot), and then geo_pointplot(x,na.rm=T,type=T).
+#' The attribute information contains in "type" column.
+#'
+#' @param samplebase One element of list sample_base, like "sample_base$citygroup2".
+#' @param stationplot The dataframe station_plot.
+#' @return A dataframe contains station_plot information and attribute information, which can be directly used
+#' by geo_pointplot().
+#'
 #' @export
 handle_mergeplot <- function(samplebase, stationplot) {
     x <- merge(samplebase, stationplot, by.x = "index", by.y = "popup", all.x = T)
