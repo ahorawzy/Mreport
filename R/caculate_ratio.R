@@ -18,7 +18,7 @@ caculate_increaseratio <- function(nowdf, thendf) {
     out <- x[1:nlen]
     for (i in 2:nlen) {
         out[i] <- ((x[i] - x[i + nlen - 1])/x[i + nlen - 1]) * 100
-        out[i] <- round(out[i], 3)
+        out[i] <- round(out[i], 1)
         if (nlen == 2) {
             out <- out[order(out[2]), ]
         }
