@@ -173,21 +173,26 @@ kable(t[order(t$省级行政区),])
 
 ```{r, results="asis"}
 provincenewcars <- caculate_level_carsmean(jdnews,"province")
-kable(provincenewcars)
+provincenewcars$province <- factor(provincenewcars$province,ordered=T,levels = province_level)
+kable(provincenewcars[order(provincenewcars$province),])
 ```
 
 #### 同比
 
 ```{r}
 provincepreviouscars <- caculate_level_carsmean(jdpreviouss,"province")
-caculate_increaseratio(provincenewcars,provincepreviouscars) %>% kable()
+t <- caculate_increaseratio(provincenewcars,provincepreviouscars)
+t$province <- factor(t$province,ordered=T,levels = province_level)
+kable(t[order(t$province),])
 ```
 
 #### 环比
 
 ```{r}
 provincelastcars <- caculate_level_carsmean(jdlasts,"province")
-caculate_increaseratio(provincenewcars,provincelastcars) %>% kable()
+t <- caculate_increaseratio(provincenewcars,provincelastcars)
+t$province <- factor(t$province,ordered=T,levels = province_level)
+kable(t[order(t$province),])
 ```
 
 ### 3.3 各省客运车辆
@@ -486,6 +491,10 @@ merge_outcome(portroadnew,x1,x2,bywhat = "portroad") %>% kable()
 ## 数据使用情况
 
 ```{r}
-table(jdnews$province,jdnews$level) %>% kable()
+t <- table(jdnews$province,jdnews$level)
+t <- data.frame(t)
+t <- dcast(t,Var1~Var2)
+t$Var1 <- factor(t$Var1,ordered = T,levels = province_level)
+kable(t[order(t$Var1),])
 ```
 

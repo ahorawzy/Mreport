@@ -1,0 +1,204 @@
+---
+title: "20180719_2018年6月月报分析_端午专题"
+author: "wzy"
+date: "2018年7月19日"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F)
+```
+
+本实验探索分日数据的分析框架
+
+## 环境准备
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 2)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 数据准备
+
+### 2018年端午
+
+```{r}
+jddwnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_DuanWu_2.csv")
+dim(jddwnew)
+```
+
+拆分日期
+
+```{r eval=FALSE}
+x <- strsplit(jddwnew$观测日期,split = "-")
+y <- sapply(x,'[',3)
+jddwnew$日 <- y
+```
+
+```{r}
+jddwnew <- split_day(jddwnew)
+jddwnew <- caculate_equivalent(jddwnew)
+jddwnew <- select_atts_forday(jddwnew)
+jddwnew <- handle_mergeline(jddwnew,station_line)
+jddwnew <- handle_mergesample(jddwnew,sample_base)
+jddwnew <- merge(jddwnew,roadlevel,by="index",all.x = T)
+jddwnew <- subset(jddwnew,index %in% station_use)
+```
+
+### 2017年端午
+
+```{r}
+jddwprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_06_DuanWu.csv")
+dim(jddwprevious)
+```
+
+```{r}
+jddwprevious <- split_day(jddwprevious)
+jddwprevious <- caculate_equivalent(jddwprevious)
+jddwprevious <- select_atts_forday(jddwprevious)
+jddwprevious <- handle_mergeline(jddwprevious,station_line)
+jddwprevious <- handle_mergesample(jddwprevious,sample_base)
+jddwprevious <- merge(jddwprevious,roadlevel,by="index",all.x = T)
+jddwprevious <- subset(jddwprevious,index %in% station_use)
+```
+
+
+## 1. 总体分析
+
+### 1.1 分道路等级
+
+```{r}
+(dwallnewlevel <- ddply(jddwnew,"level",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+```{r}
+(dwallpreviouslevel <- ddply(jddwprevious,"level",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+```{r}
+caculate_increaseratio(dwallnewlevel,dwallpreviouslevel) %>% kable()
+```
+
+### 1.2 分日期
+
+```{r}
+(dwallnewday <- ddply(jddwnew,"day",summarise,Wmean = weighted.mean(cars,w=mileage))) %>% kable()
+```
+
+## 2. 分省分析
+
+```{r}
+province_level <- c("北京市","天津市","河北省","山西省","内蒙古自治区","辽宁省","吉林省","黑龙江省",
+                    "上海市","江苏省","浙江省","安徽省","福建省","江西省","山东省","河南省",
+                    "湖北省","湖南省","广东省","广西壮族自治区","海南省","重庆市","四川省","贵州省",
+                    "云南省","西藏自治区","陕西省","甘肃省","青海省","宁夏回族自治区","新疆维吾尔自治区")
+```
+
+```{r}
+dwprovincenew <- caculate_carsmean(jddwnew,"province")
+```
+
+```{r}
+dwprovinceprevious <- caculate_carsmean(jddwprevious,"province")
+x1 <- caculate_increaseratio(dwprovincenew,dwprovinceprevious)
+```
+
+```{r}
+t <- merge(dwprovincenew,x1,by="province")
+t$province <- factor(t$province,ordered = T,levels = province_level)
+kable(t[order(t$province),])
+```
+
+
+## 3. 旅游景区
+
+```{r}
+dwscenerynew <- caculate_carsmean(jddwnew,"scenery")
+```
+
+同比
+
+```{r}
+dwsceneryprevious <- caculate_carsmean(jddwprevious,"scenery")
+x1 <- caculate_increaseratio(dwscenerynew,dwsceneryprevious)
+```
+
+```{r}
+t <- table(jddwnew$province,jddwnew$scenery) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","scenery")
+```
+
+
+```{r}
+k <- merge(dwscenerynew,x1,by="scenery")
+g <- merge(k,t,by="scenery")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+kable(g[order(g$province),])
+```
+
+## 4. 大城市出入口
+
+```{r}
+dwbigcityionew <- caculate_carsmean(jddwnew,"bigcityio")
+```
+
+```{r}
+dwbigcityioprevious <- caculate_carsmean(jddwprevious,"bigcityio")
+x1 <- caculate_increaseratio(dwbigcityionew,dwbigcityioprevious)
+```
+
+```{r}
+t <- table(jddwnew$province,jddwnew$bigcityio) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","bigcityio")
+```
+
+```{r}
+k <- merge(dwbigcityionew,x1,by="bigcityio")
+g <- merge(k,t,by="bigcityio")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+kable(g[order(g$province),])
+```
+
+## 5. 机场
+
+```{r}
+dwairportnew <- caculate_carsmean(jddwnew,"airport")
+```
+
+```{r}
+dwairportprevious <- caculate_carsmean(jddwprevious,"airport")
+x1 <- caculate_increaseratio(dwairportnew,dwairportprevious)
+```
+
+```{r}
+t <- table(jddwnew$province,jddwnew$airport) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","airport")
+```
+
+```{r}
+k <- merge(dwairportnew,x1,by="airport")
+g <- merge(k,t,by="airport")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+kable(g[order(g$province),])
+```
+
