@@ -58,3 +58,13 @@ handle_mergesample <- function(jd, samplebase) {
     }
     return(jd)
 }
+
+#' @export
+handle_gather <- function(jd){
+  jd <- caculate_equivalent(jd)
+  jd <- select_atts(jd)
+  jd <- handle_mergeline(jd,station_line)
+  jd <- handle_mergesample(jd,sample_base)
+  jd <- merge(jd,roadlevel,by="index",all.x = T)
+  jd <- subset(jd,index %in% station_use)
+}
