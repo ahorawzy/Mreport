@@ -13,9 +13,52 @@
 #' @param bywhat The theme name, like "citygroup" or "portroad".
 #'
 #' @export
-merge_outcome <- function(now,previous,last,bywhat){
-  x <- merge(now,previous,by=bywhat)
-  x <- merge(x,last,by=bywhat)
-  names(x)[2:4] <- c("now","previous","last")
+merge_outcome <- function(now,previous=FALSE,last=FALSE,bywhat){
+  if(is.logical(previous) == TRUE){
+    x <- merge(now,last,by=bywhat)
+    names(x)[2:3] <- c("now","last")
+  } else if(is.logical(last) == TRUE){
+    x <- merge(now,previous,by=bywhat)
+    names(x)[2:3] <- c("now","previous")
+  } else{
+    x <- merge(now,previous,by=bywhat)
+    x <- merge(x,last,by=bywhat)
+    names(x)[2:4] <- c("now","previous","last")
+  }
   return(x)
+}
+
+#' @export
+typicalroute_horizon <- function(jdnews, jdprevious, routename) {
+  x <- subset(jdnews,horizon10 == routename)
+  xnow <- caculate_carsmean(x,"province")
+  y <- subset(jdprevious,horizon10 == routename)
+  ylast <- caculate_carsmean(y,"province")
+  yratio <- caculate_increaseratio(xnow,ylast)
+  t <- merge_outcome(xnow,previous=yratio,bywhat = "province")
+  return(t)
+}
+
+#' @export
+typicalroute_vertical <- function(jdnews, jdprevious, routename) {
+  x <- subset(jdnews,vertical10 == routename)
+  xnow <- caculate_carsmean(x,"province")
+  y <- subset(jdprevious,vertical10 == routename)
+  ylast <- caculate_carsmean(y,"province")
+  yratio <- caculate_increaseratio(xnow,ylast)
+  t <- merge_outcome(xnow,previous=yratio,bywhat = "province")
+  return(t)
+}
+
+#' @export
+data_use <- function(jd){
+  t <- table(jd[["province"]],jd[["level"]])
+  t <- data.frame(t)
+  t <- dcast(t,Var1~Var2)
+  t$Var1 <- factor(t$Var1,ordered = T,levels = province_level)
+  rownames(t) <- t$Var1
+  t <- t[order(t$Var1),-1]
+  s <- rbind(t,colSums(t))
+  p <- colSums(t)/sum(colSums(t))
+  return(list(s,p))
 }
