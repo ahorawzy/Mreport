@@ -13,11 +13,11 @@
 #' @param bywhat The theme name, like "citygroup" or "portroad".
 #'
 #' @export
-merge_outcome <- function(now,previous=FALSE,last=FALSE,bywhat){
-  if(is.logical(previous) == TRUE){
+merge_outcome <- function(now,previous=NULL,last=NULL,bywhat){
+  if(is.null(previous) == TRUE){
     x <- merge(now,last,by=bywhat)
     names(x)[2:3] <- c("now","last")
-  } else if(is.logical(last) == TRUE){
+  } else if(is.null(last) == TRUE){
     x <- merge(now,previous,by=bywhat)
     names(x)[2:3] <- c("now","previous")
   } else{
