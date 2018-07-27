@@ -55,7 +55,7 @@ geo_pointplot <- function(pointdf, region = FALSE, type = FALSE, map = "OpenStre
         reg <- leafletCN::leafletGeo(region)
         m <- leaflet::addPolygons(m, data = reg, stroke = TRUE, smoothFactor = 1, fillOpacity = 0, weight = 3)
     }
-    
+
     if (type == TRUE & popup == FALSE) {
         types <- unique(pointdf[, "type"])
         ntype <- length(types)
