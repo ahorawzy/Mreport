@@ -3,6 +3,8 @@ Type: Package
 Title: Monthly Report of traffic condition
 Version: 0.0.0.9000
 Author@R: person("ZhiYuan","Wang",email="lzyz09193@163.com",role="aut","cre")
+Author: ZhiYuan Wang
+Maintainer: ZhiYuan Wang <lzyz09193@163.com>
 Description: This package aimes at helping me make monthly analysis report of 
     traffic condition during my intership. It may contain several useful
     functions to make monthly report more normative and efficient.
@@ -18,3 +20,4 @@ Imports: leaflet,
     reshape2
 Depends: leafletCN
 RoxygenNote: 6.0.1
+Suggests: testthat
