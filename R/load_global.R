@@ -14,6 +14,7 @@ load_base <- function() {
     load_raw("line")
     load_raw("roadlevel")
     load_raw("province_level")
+    load_raw("dzx")
 }
 
 #' @export
