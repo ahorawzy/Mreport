@@ -109,7 +109,7 @@ horizonnew <- caculate_carsmean(jd = jdnews,attsname = "horizon10")
 horizonprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "horizon10")
 x1 <- caculate_increaseratio(horizonnew,horizonprevious)
 horizonlast <- caculate_carsmean(jd = jdlasts,attsname = "horizon10")
-x2 <- caculate_increaseratio(horizonlast,horizonprevious)
+x2 <- caculate_increaseratio(horizonnew,horizonlast)
 t <- merge_outcome(horizonnew,x1,x2,bywhat = "horizon10")
 names(t) <- c("十横通道","月平均日交通量","同比","环比")
 kable(t)
@@ -122,7 +122,7 @@ horizonnew <- caculate_passcarsmean(jd = jdnews,attsname = "horizon10")
 horizonprevious <- caculate_passcarsmean(jd = jdpreviouss,attsname = "horizon10")
 x1 <- caculate_increaseratio(horizonnew,horizonprevious)
 horizonlast <- caculate_passcarsmean(jd = jdlasts,attsname = "horizon10")
-x2 <- caculate_increaseratio(horizonlast,horizonprevious)
+x2 <- caculate_increaseratio(horizonnew,horizonlast)
 t <- merge_outcome(horizonnew,x1,x2,bywhat = "horizon10")
 names(t) <- c("十横通道","月平均日交通量","同比","环比")
 kable(t)
@@ -135,7 +135,7 @@ horizonnew <- caculate_frecarsmean(jd = jdnews,attsname = "horizon10")
 horizonprevious <- caculate_frecarsmean(jd = jdpreviouss,attsname = "horizon10")
 x1 <- caculate_increaseratio(horizonnew,horizonprevious)
 horizonlast <- caculate_frecarsmean(jd = jdlasts,attsname = "horizon10")
-x2 <- caculate_increaseratio(horizonlast,horizonprevious)
+x2 <- caculate_increaseratio(horizonnew,horizonlast)
 t <- merge_outcome(horizonnew,x1,x2,bywhat = "horizon10")
 names(t) <- c("十横通道","月平均日交通量","同比","环比")
 kable(t)
@@ -150,7 +150,7 @@ verticalnew <- caculate_carsmean(jd = jdnews,attsname = "vertical10")
 verticalprevious <- caculate_carsmean(jd = jdpreviouss,attsname = "vertical10")
 x1 <- caculate_increaseratio(verticalnew,verticalprevious)
 verticallast <- caculate_carsmean(jd = jdlasts,attsname = "vertical10")
-x2 <- caculate_increaseratio(verticallast,verticalprevious)
+x2 <- caculate_increaseratio(verticalnew,verticallast)
 t <- merge_outcome(verticalnew,x1,x2,bywhat = "vertical10")
 names(t) <- c("十纵通道","月平均日交通量","同比","环比")
 kable(t)
@@ -163,7 +163,7 @@ verticalnew <- caculate_passcarsmean(jd = jdnews,attsname = "vertical10")
 verticalprevious <- caculate_passcarsmean(jd = jdpreviouss,attsname = "vertical10")
 x1 <- caculate_increaseratio(verticalnew,verticalprevious)
 verticallast <- caculate_passcarsmean(jd = jdlasts,attsname = "vertical10")
-x2 <- caculate_increaseratio(verticallast,verticalprevious)
+x2 <- caculate_increaseratio(verticalnew,verticallast)
 t <- merge_outcome(verticalnew,x1,x2,bywhat = "vertical10")
 names(t) <- c("十纵通道","月平均日交通量","同比","环比")
 kable(t)
@@ -176,7 +176,7 @@ verticalnew <- caculate_frecarsmean(jd = jdnews,attsname = "vertical10")
 verticalprevious <- caculate_frecarsmean(jd = jdpreviouss,attsname = "vertical10")
 x1 <- caculate_increaseratio(verticalnew,verticalprevious)
 verticallast <- caculate_frecarsmean(jd = jdlasts,attsname = "vertical10")
-x2 <- caculate_increaseratio(verticallast,verticalprevious)
+x2 <- caculate_increaseratio(verticalnew,verticallast)
 t <- merge_outcome(verticalnew,x1,x2,bywhat = "vertical10")
 names(t) <- c("十纵通道","月平均日交通量","同比","环比")
 kable(t)
@@ -432,6 +432,13 @@ kable(t[order(t$省级行政区),])
 ## 8. 数据使用情况
 
 ```{r}
+nrow(jdnews)
+nrow(jdlasts)
+nrow(jdpreviouss)
+```
+
+
+```{r}
 t <- data_use(jdnews)[[1]]
 rownames(t)[32] <- c("合计")
 t <- t[,c("国家高速","普通国道","省级高速","普通省道")]
@@ -440,6 +447,6 @@ kable(t)
 
 ```{r}
 p <- data_use(jdnews)[[2]]
-p
+kable(p)
 ```
 
