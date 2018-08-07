@@ -4,7 +4,7 @@
 \alias{merge_outcome}
 \title{Merge 3 columns of outcome}
 \usage{
-merge_outcome(now, previous = FALSE, last = FALSE, bywhat)
+merge_outcome(now, previous = NULL, last = NULL, bywhat)
 }
 \arguments{
 \item{now}{The report month, like 2018/06.}
