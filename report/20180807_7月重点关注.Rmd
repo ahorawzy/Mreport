@@ -1,0 +1,264 @@
+---
+title: "20180807_7鏈堥噸鐐瑰叧娉<a8>"
+author: "wzy"
+date: "2018骞<b4>8鏈<88>7鏃<a5>"
+output:
+  word_document: default
+  hxp_document: default
+---
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(lubridate)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+
+## 7.1 强降雨与台风等极端天气影响
+
+### 7.1.1 7月成都强降雨影响
+
+```{r}
+jdcd07 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201807成都.csv",stringsAsFactors = F)
+jdcd06 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201806成都.csv",stringsAsFactors = F)
+```
+
+```{r}
+jdcd07s <- handle_gather_forday(jdcd07)
+jdcd06s <- handle_gather_forday(jdcd06)
+```
+
+```{r}
+cd07 <- ddply(jdcd07s,"day",summarise,Wmean = weighted.mean(cars,w=mileage))
+cd07$day <- as.numeric(cd07$day)
+cd07$day <- factor(cd07$day,ordered = T,levels = 1:31)
+cd07 <- cd07[order(cd07$day),]
+rownames(cd07) <- 1:31
+```
+
+```{r}
+ggplot(data=cd07,aes(cd07$day,cd07$Wmean))+
+  geom_point(colour="steelblue")+
+  geom_line(aes(as.numeric(cd07$day),cd07$Wmean),colour="steelblue")+
+  ylim(15000,23000)+
+  xlab("7月日期")+
+  ylab("单日交通量")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\成都7月.png",dpi=600)
+```
+
+```{r}
+kable(cd07)
+```
+
+```{r}
+(15471-19676)/19676
+```
+
+```{r}
+caculate_increaseratio(caculate_carsmean(jdcd07s,"city"),caculate_carsmean(jdcd06s,"city"))
+```
+
+```{r}
+caculate_increaseratio(caculate_carsmean(jdcd07s,"county"),caculate_carsmean(jdcd06s,"county"))
+```
+
+
+### 7.1.2 台风“玛莉亚”对温州的影响
+
+```{r}
+jdwz <- read.csv("D:\\data\\sx_raw\\交调数据\\jd20180710-13温州.csv",stringsAsFactors = F)
+dim(jdwz)
+```
+
+```{r}
+names(jdwz)
+```
+
+```{r}
+jdwzs <- jdwz[,c(1,2,3,4,5,22)]
+names(jdwzs) <- c("day","hour","index","name","mileage","cars")
+```
+
+```{r}
+x <- caculate_carsmean(jdwzs,c("hour","day"))
+x$hour <- factor(as.numeric(x$hour),levels = 1:24,ordered = T)
+x <- x[order(x$hour),]
+```
+
+```{r}
+ggplot(x,aes(as.numeric(x$hour),x$Wmean,group=x$day,colour=x$day))+
+  geom_point()+
+  geom_line()+
+  xlab("小时")+
+  ylab("交通量")+
+  scale_x_continuous(breaks = c(0,24,seq(0,24,2)))+
+  labs(colour="日期")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\温州7月.png",dpi=600)
+```
+
+```{r}
+y <- dcast(x,x$hour~x$day)
+colMeans(y[-1])
+```
+
+```{r}
+(361-735)/735
+```
+
+### 7.1.3 台风“安比”影响
+
+```{r}
+jdab <- read.csv("D:\\data\\sx_raw\\交调数据\\jd20180719-25全国.csv")
+dim(jdab)
+```
+
+```{r}
+jdabs <- handle_gather_forday(jdab)
+names(jdabs)
+```
+
+```{r}
+x <- caculate_carsmean(jdabs,c("province","day"))
+x <- x[x$province %in% c("上海市","江苏省","北京市",
+                         "天津市","浙江省","山东省"),]
+y <- dcast(x,x$province~x$day)
+y
+```
+
+```{r}
+ggplot(x,aes(x$province,as.factor(x$day),fill=x$Wmean))+
+  geom_tile()+
+  coord_flip()+
+  xlab("省级行政区")+
+  ylab("日期")+
+  labs(fill="单日交通量")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\台风安比.png",dpi=600)
+```
+
+## 7.2 暑期旅游景区周边公路
+
+### 7.2.1 全国旅游景区情况
+
+```{r include=FALSE}
+jdnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_07_2.csv")
+jdlast <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_new.csv")
+jdprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_07_2.csv")
+```
+
+```{r include=FALSE}
+jdnews <- handle_gather(jdnew)
+jdlasts <- handle_gather(jdlast)
+jdpreviouss <- handle_gather(jdprevious)
+usefulstation <- intersect(jdnews$index,jdlasts$index)
+jdnews <- jdnews[jdnews$index %in% usefulstation,]
+jdlasts <- jdlasts[jdlasts$index %in% usefulstation,]
+jdpreviouss <- jdpreviouss[jdpreviouss$index %in% usefulstation,]
+```
+
+```{r}
+scenery1807 <- caculate_carsmean(jdnews,"scenery")
+scenery1806 <- caculate_carsmean(jdlasts,"scenery")
+scenery1707 <- caculate_carsmean(jdpreviouss,"scenery")
+```
+
+```{r}
+tb <- caculate_increaseratio(scenery1807,scenery1707)
+hb <- caculate_increaseratio(scenery1807,scenery1806)
+x <- merge_outcome(scenery1807,tb,hb,bywhat = "scenery")
+```
+
+```{r}
+t <- table(jdnews$province,jdnews$scenery) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","scenery")
+```
+
+```{r}
+g <- merge(x,t,by="scenery")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+g <- g[,c("province","scenery","now","previous","last")]
+kable(g[order(g$province),])
+```
+
+### 7.2.2 贵州旅游景区情况
+
+```{r}
+jdgz <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201807贵州.csv")
+dim(jdgz)
+```
+
+```{r}
+jdgzs <- handle_gather_forday(jdgz)
+names(jdgzs)
+```
+
+```{r}
+xp <- jdgzs[jdgzs$label=="小坡观测站",]
+dim(xp)
+```
+
+```{r}
+xp <- xp[order(xp$day),]
+```
+
+
+```{r}
+ggplot(xp,aes(day,passenger_cars))+
+  geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+  ylim(0,12000)+labs(x="日期",y="客车交通量")+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\小坡.png",dpi=600)
+```
+
+```{r}
+dss <- jdgzs[jdgzs$label=="大山哨观测站",]
+dim(dss)
+```
+
+```{r}
+dss <- dss[order(dss$day),]
+```
+
+
+```{r}
+ggplot(dss,aes(day,passenger_cars))+
+  geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+  labs(x="日期",y="客车交通量")+ylim(0,40000)+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\大山哨.png",dpi=600)
+```
+
+```{r}
+x <- caculate_level_passcarsmean(jdgzs,"day")
+x <- x[order(x$day),c(1,2,3)]
+x <- melt(x,id.vars = "day")
+```
+
+```{r}
+ggplot(x,aes(day,value,group=variable,colour=variable))+
+  geom_point()+
+  geom_line()+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
+  labs(x="日期",y="单日交通量",colour="道路等级")+
+  ylim(0,20000)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\贵州高速.png",dpi=600)
+```
+
+
+
+
+
