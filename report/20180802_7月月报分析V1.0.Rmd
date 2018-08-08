@@ -450,3 +450,10 @@ p <- data_use(jdnews)[[2]]
 kable(p)
 ```
 
+```{r}
+t$合计 <- rowSums(t)
+t$省份 <- rownames(t)
+t2 <- merge(t,province_region,by="省份")
+tapply(t2$合计, t2$地域, sum)
+```
+

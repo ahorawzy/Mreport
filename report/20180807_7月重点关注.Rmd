@@ -57,7 +57,7 @@ ggplot(data=cd07,aes(cd07$day,cd07$Wmean))+
   ylim(15000,23000)+
   xlab("7月日期")+
   ylab("单日交通量")
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\成都7月.png",dpi=600)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\成都7月.png",dpi=600,height=4.5,width=9)
 ```
 
 ```{r}
@@ -107,7 +107,7 @@ ggplot(x,aes(as.numeric(x$hour),x$Wmean,group=x$day,colour=x$day))+
   ylab("交通量")+
   scale_x_continuous(breaks = c(0,24,seq(0,24,2)))+
   labs(colour="日期")
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\温州7月.png",dpi=600)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\温州7月.png",dpi=600,height=4.5,width=9)
 ```
 
 ```{r}
@@ -145,8 +145,10 @@ ggplot(x,aes(x$province,as.factor(x$day),fill=x$Wmean))+
   coord_flip()+
   xlab("省级行政区")+
   ylab("日期")+
-  labs(fill="单日交通量")
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\台风安比.png",dpi=600)
+  labs(fill="单日交通量")+
+  theme(axis.text.y = element_text(size=12))+
+  theme(axis.text.x = element_text(size=12))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\台风安比.png",dpi=600,height=4.5,width=9)
 ```
 
 ## 7.2 暑期旅游景区周边公路
@@ -221,7 +223,7 @@ ggplot(xp,aes(day,passenger_cars))+
   geom_point(colour="steelblue")+geom_line(colour="steelblue")+
   ylim(0,12000)+labs(x="日期",y="客车交通量")+
   scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\小坡.png",dpi=600)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\小坡.png",dpi=600,height=4.5,width=9)
 ```
 
 ```{r}
@@ -239,7 +241,7 @@ ggplot(dss,aes(day,passenger_cars))+
   geom_point(colour="steelblue")+geom_line(colour="steelblue")+
   labs(x="日期",y="客车交通量")+ylim(0,40000)+
   scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\大山哨.png",dpi=600)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\大山哨.png",dpi=600,height=4.5,width=9)
 ```
 
 ```{r}
@@ -255,7 +257,7 @@ ggplot(x,aes(day,value,group=variable,colour=variable))+
   scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
   labs(x="日期",y="单日交通量",colour="道路等级")+
   ylim(0,20000)
-ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\贵州高速.png",dpi=600)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\贵州高速.png",dpi=600,height=4.5,width=9)
 ```
 
 
