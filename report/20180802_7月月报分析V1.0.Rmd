@@ -356,7 +356,7 @@ kable(t[order(t$省级行政区),])
 ```{r}
 caculate_carsmean(jdnews,"province") %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
                                                     ylabname="月平均日机动车交通量")
-ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\6月分析\\绘图\\省级机动车.jpg",dpi=600)
+ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\省级机动车.jpg",dpi=600)
 ```
 
 
