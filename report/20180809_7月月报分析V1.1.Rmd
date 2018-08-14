@@ -283,7 +283,6 @@ leaflet(ttt) %>% addProviderTiles("CartoDB.PositronNoLabels") %>%
 ```
 
 
-
 ### 4.2 机场连接公路分析
 
 ```{r}
@@ -308,8 +307,6 @@ leaflet(tt) %>% addTiles() %>%
   addCircles(label = ~label,lng = ~lng,lat = ~lat,popup = ~popup,
              radius = ~cars/5,stroke = F, fillOpacity = 1, fillColor ="red")
 ```
-
-
 
 ## 5. 城市群分析
 
