@@ -63,6 +63,24 @@ data_use <- function(jd){
   return(list(s,p))
 }
 
+#' -------
+#'
+#' Caculate now_wmean previous_increaseratio and last_increaseratio
+#'
+#' This function can caculate 3 components in one time by given attsname and carstype.
+#'
+#' This function serves for report wirting. It's very common that combine now_wmean,
+#' previous_increaseratio and last_increaseratio in one dataframe(table). This function
+#' is a combination machine which combines most important functions into one. It's the most
+#' useful function in this package.
+#'
+#' @param newsjd The jd dataframe which used to be jdnews.
+#' @param previoussjd The jd dataframe which used to be jdpreviouss.
+#' @param lastsjd The jd dataframe which used to be jdlasts.
+#' @param attsname A string that you want to analysis, for example "citygroup2".
+#' @param carstype A string must be one from "cars", "passcars", "frecars".
+#' @return A dataframe consists of 3 columns, including now_wmean, previous_increaseratio, last_increaseratio.
+#'
 #' @export
 result_present <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
   if(carstype == "cars"){
@@ -79,13 +97,15 @@ result_present <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
     lastcars <- caculate_passcarsmean(lastsjd,attsname)
     y <- caculate_increaseratio(newcars,lastcars)
     z <- merge_outcome(newcars,x,y,bywhat=attsname)
-  } else{
+  } else if (carstype == "frecars"){
     newcars <- caculate_frecarsmean(newsjd,attsname)
     previouscars <- caculate_frecarsmean(previoussjd,attsname)
     x <- caculate_increaseratio(newcars,previouscars)
     lastcars <- caculate_frecarsmean(lastsjd,attsname)
     y <- caculate_increaseratio(newcars,lastcars)
     z <- merge_outcome(newcars,x,y,bywhat=attsname)
+  } else{
+    stop("Wrong carstype!")
   }
   return(z)
 }
