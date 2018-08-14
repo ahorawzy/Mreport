@@ -63,16 +63,16 @@ data_use <- function(jd){
   return(list(s,p))
 }
 
-#' -------
 #'
 #' Caculate now_wmean previous_increaseratio and last_increaseratio
 #'
 #' This function can caculate 3 components in one time by given attsname and carstype.
 #'
-#' This function serves for report wirting. It's very common that combine now_wmean,
-#' previous_increaseratio and last_increaseratio in one dataframe(table). This function
-#' is a combination machine which combines most important functions into one. It's the most
-#' useful function in this package.
+#' This function serves for report wirting. It's very common that combines now_wmean,
+#' previous_increaseratio and last_increaseratio in one dataframe. This function
+#' is a combination machine which combines most important functions into one.
+#'
+#' It's the most useful function in this package.
 #'
 #' @param newsjd The jd dataframe which used to be jdnews.
 #' @param previoussjd The jd dataframe which used to be jdpreviouss.

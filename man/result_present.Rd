@@ -2,7 +2,7 @@
 % Please edit documentation in R/report_support.R
 \name{result_present}
 \alias{result_present}
-\title{-------}
+\title{Caculate now_wmean previous_increaseratio and last_increaseratio}
 \usage{
 result_present(newsjd, previoussjd, lastsjd, attsname, carstype)
 }
@@ -21,13 +21,12 @@ result_present(newsjd, previoussjd, lastsjd, attsname, carstype)
 A dataframe consists of 3 columns, including now_wmean, previous_increaseratio, last_increaseratio.
 }
 \description{
-Caculate now_wmean previous_increaseratio and last_increaseratio
+This function can caculate 3 components in one time by given attsname and carstype.
 }
 \details{
-This function can caculate 3 components in one time by given attsname and carstype.
+This function serves for report wirting. It's very common that combines now_wmean,
+previous_increaseratio and last_increaseratio in one dataframe. This function
+is a combination machine which combines most important functions into one.
 
-This function serves for report wirting. It's very common that combine now_wmean,
-previous_increaseratio and last_increaseratio in one dataframe(table). This function
-is a combination machine which combines most important functions into one. It's the most
-useful function in this package.
+It's the most useful function in this package.
 }
