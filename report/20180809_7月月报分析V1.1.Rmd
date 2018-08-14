@@ -279,7 +279,7 @@ ttt$label <- ttt$Group.1
 leaflet(ttt) %>% addProviderTiles("CartoDB.PositronNoLabels") %>% 
   addCircles(label = ~label,lng = ~lng,lat = ~lat,
              radius = ~cars/3,stroke = F, fillOpacity = 1, fillColor ="red",
-             labelOptions = labelOptions(noHide = T,draggable=T,textsize=25))
+             labelOptions = labelOptions(noHide = T,textsize=10))
 ```
 
 
