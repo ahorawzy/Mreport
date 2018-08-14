@@ -62,3 +62,30 @@ data_use <- function(jd){
   p <- colSums(t)/sum(colSums(t))
   return(list(s,p))
 }
+
+#' @export
+result_present <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
+  if(carstype == "cars"){
+    newcars <- caculate_carsmean(newsjd,attsname)
+    previouscars <- caculate_carsmean(previoussjd,attsname)
+    x <- caculate_increaseratio(newcars,previouscars)
+    lastcars <- caculate_carsmean(lastsjd,attsname)
+    y <- caculate_increaseratio(newcars,lastcars)
+    z <- merge_outcome(newcars,x,y,bywhat=attsname)
+  } else if (carstype == "passcars"){
+    newcars <- caculate_passcarsmean(newsjd,attsname)
+    previouscars <- caculate_passcarsmean(previoussjd,attsname)
+    x <- caculate_increaseratio(newcars,previouscars)
+    lastcars <- caculate_passcarsmean(lastsjd,attsname)
+    y <- caculate_increaseratio(newcars,lastcars)
+    z <- merge_outcome(newcars,x,y,bywhat=attsname)
+  } else{
+    newcars <- caculate_frecarsmean(newsjd,attsname)
+    previouscars <- caculate_frecarsmean(previoussjd,attsname)
+    x <- caculate_increaseratio(newcars,previouscars)
+    lastcars <- caculate_frecarsmean(lastsjd,attsname)
+    y <- caculate_increaseratio(newcars,lastcars)
+    z <- merge_outcome(newcars,x,y,bywhat=attsname)
+  }
+  return(z)
+}
