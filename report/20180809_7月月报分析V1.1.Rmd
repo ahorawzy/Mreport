@@ -391,7 +391,7 @@ kable(t)
 
 ```{r eval=FALSE}
 caculate_carsmean(jdnews,"province") %>% 
-geojsonMap(mapName = "China")
+geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 
 ```{r}
@@ -448,7 +448,7 @@ kable(t[order(t$province),])
 
 ```{r eval=FALSE}
 caculate_passcarsmean(jdnews,"province") %>% 
-geojsonMap(mapName = "China")
+geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 
 ```{r}
@@ -467,7 +467,7 @@ kable(t[order(t$省级行政区),])
 
 ```{r eval=FALSE}
 caculate_frecarsmean(jdnews,"province") %>% 
-geojsonMap(mapName = "China")
+geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 
 ```{r}
