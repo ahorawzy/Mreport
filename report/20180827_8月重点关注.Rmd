@@ -1,0 +1,31 @@
+---
+title: "20180827_8月重点关注"
+author: "wzy"
+date: "2018年8月27日"
+output: html_document
+---
+
+```{r}
+options(stringsAsFactors = F)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\source_toglobal.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(lubridate)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 7.1 台风影响
+
+### 7.1.1 温比亚台风影响
+
