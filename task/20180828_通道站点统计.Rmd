@@ -1,0 +1,70 @@
+---
+title: "20180828_通道站点统计"
+author: "wzy"
+date: "2018年8月28日"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F,warning = F)
+```
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r include=FALSE}
+jdnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_07_2.csv")
+jdlast <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_06_new.csv")
+jdprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_07_2.csv")
+```
+
+```{r include=FALSE}
+jdnews <- handle_gather(jdnew)
+jdlasts <- handle_gather(jdlast)
+jdpreviouss <- handle_gather(jdprevious)
+usefulstation <- intersect(jdnews$index,jdlasts$index)
+jdnews <- jdnews[jdnews$index %in% usefulstation,]
+jdlasts <- jdlasts[jdlasts$index %in% usefulstation,]
+jdpreviouss <- jdpreviouss[jdpreviouss$index %in% usefulstation,]
+```
+
+```{r}
+x <- table(jdnews$province,jdnews$vertical10)
+write.csv(x,file="D:\\交大云同步\\实习\\15_通道站点统计\\十纵通道.csv")
+```
+
+```{r}
+x <- table(jdnews$province,jdnews$horizon10)
+write.csv(x,file="D:\\交大云同步\\实习\\15_通道站点统计\\十横通道.csv")
+```
+
+```{r}
+y <- handle_mergeplot(sample_base$vertical10,station_plot)
+geo_pointplot(y,na.rm = T,type=T)
+```
+
+```{r}
+y <- handle_mergeplot(sample_base$horizon10,station_plot)
+geo_pointplot(y,na.rm = T,type=T)
+```
+
