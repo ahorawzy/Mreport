@@ -57,6 +57,8 @@ jdpreviouss <- jdpreviouss[jdpreviouss$index %in% usefulstation,]
 ```{r}
 z <- result_present(jdnews,jdpreviouss,jdlasts,"level","cars")
 names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
 kable(z)
 ```
 
@@ -65,6 +67,8 @@ kable(z)
 ```{r}
 z <- result_present(jdnews,jdpreviouss,jdlasts,"level","passcars")
 names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
 kable(z)
 ```
 
@@ -73,6 +77,8 @@ kable(z)
 ```{r}
 z <- result_present(jdnews,jdpreviouss,jdlasts,"level","frecars")
 names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
 kable(z)
 ```
 
@@ -204,6 +210,7 @@ t <- result_present(jdnews,jdpreviouss,jdlasts,"portroad","frecars")
 t$portroad <- substr(t$portroad,1,nchar(t$portroad)-1)
 t <- t[order(t$now,decreasing = T),]
 rownames(t) <- NULL
+names(t) <- c("港口","日均交通量","同比","环比")
 kable(t)
 ```
 
@@ -233,6 +240,7 @@ leaflet(tt) %>% addProviderTiles("CartoDB.PositronNoLabels") %>%
 ```{r}
 t <- result_present(jdnews,jdpreviouss,jdlasts,"airport","cars")
 t <- t[order(t$now,decreasing = T),]
+names(t) <- c("机场","日均交通量","同比","环比")
 kable(t)
 ```
 
