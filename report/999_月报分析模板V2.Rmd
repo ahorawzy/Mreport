@@ -241,6 +241,7 @@ leaflet(tt) %>% addProviderTiles("CartoDB.PositronNoLabels") %>%
 t <- result_present(jdnews,jdpreviouss,jdlasts,"airport","cars")
 t <- t[order(t$now,decreasing = T),]
 names(t) <- c("机场","日均交通量","同比","环比")
+rownames(t) <- NULL
 kable(t)
 ```
 
@@ -294,7 +295,9 @@ geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 t <- result_present(jdnews,jdpreviouss,jdlasts,"province","cars")
 names(t) <- c("省级行政区","月平均日交通量","同比","环比")
 t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
-kable(t[order(t$省级行政区),])
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
 ```
 
 
@@ -313,6 +316,7 @@ ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\7月分�
 provincenewcars <- caculate_level_carsmean(jdnews,"province")
 provincenewcars$province <- factor(provincenewcars$province,ordered=T,levels = province_level)
 provincenewcars <- provincenewcars[order(provincenewcars$province),c("province","国家高速","普通国道","省级高速","普通省道")]
+rownames(provincenewcars) <- NULL
 kable(provincenewcars)
 ```
 
@@ -323,7 +327,9 @@ provincepreviouscars <- caculate_level_carsmean(jdpreviouss,"province")
 provincepreviouscars <- provincepreviouscars[,c("province","国家高速","普通国道","省级高速","普通省道")]
 t <- caculate_increaseratio(provincenewcars,provincepreviouscars)
 t$province <- factor(t$province,ordered=T,levels = province_level)
-kable(t[order(t$province),])
+t <- t[order(t$province),]
+rownames(t) <- NULL
+kable(t)
 ```
 
 #### 环比
@@ -333,7 +339,9 @@ provincelastcars <- caculate_level_carsmean(jdlasts,"province")
 provincelastcars <- provincelastcars[,c("province","国家高速","普通国道","省级高速","普通省道")]
 t <- caculate_increaseratio(provincenewcars,provincelastcars)
 t$province <- factor(t$province,ordered=T,levels = province_level)
-kable(t[order(t$province),])
+t <- t[order(t$province),]
+rownames(t) <- NULL
+kable(t)
 ```
 
 ### 6.3 客车交通量情况
@@ -347,7 +355,9 @@ geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 t <- result_present(jdnews,jdpreviouss,jdlasts,"province","passcars")
 names(t) <- c("省级行政区","月平均日交通量","同比","环比")
 t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
-kable(t[order(t$省级行政区),])
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
 ```
 
 
@@ -362,7 +372,9 @@ geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 t <- result_present(jdnews,jdpreviouss,jdlasts,"province","frecars")
 names(t) <- c("省级行政区","月平均日交通量","同比","环比")
 t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
-kable(t[order(t$省级行政区),])
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
 ```
 
 
