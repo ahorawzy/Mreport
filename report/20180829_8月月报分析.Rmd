@@ -27,6 +27,7 @@ library(reshape2)
 library(knitr)
 library(leaflet)
 library(leafletCN)
+library(stringr)
 ```
 
 ```{r}
@@ -248,13 +249,16 @@ kable(t)
 
 ```{r eval=FALSE}
 t <- merge(station_plot,sample_base$airport,by.x = "popup",by.y = "index",all.y = T)
-p <- jdnews[,c(1,10,11,12)]
+p <- jdnews[,c(1,7,10,11,12)]
 tt <- merge(t,p,by.x = "popup",by.y="index")
-tt <- tt[,-2]
+tt <- tt[,c(-2,-5)]
+tt[2,4] <- "北京市"
 names(tt)[4] <- "label"
-leaflet(tt) %>% addTiles() %>% 
+tt$label <- str_sub(tt$label,1,-2)
+leaflet(tt) %>% addProviderTiles("CartoDB.PositronNoLabels") %>% 
   addCircles(label = ~label,lng = ~lng,lat = ~lat,popup = ~popup,
-             radius = ~cars/5,stroke = F, fillOpacity = 1, fillColor ="red")
+             radius = ~cars,stroke = F, fillOpacity = 1, fillColor ="red",
+             labelOptions = labelOptions(noHide = T,draggable=T,textsize=25))
 ```
 
 ## 5. 城市群分析
@@ -304,7 +308,7 @@ kable(t)
 ```{r}
 caculate_carsmean(jdnews,"province") %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
                                                     ylabname="月平均日机动车交通量")
-ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\省级机动车.jpg",dpi=600)
+ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\省级机动车交通量柱状图.jpg",dpi=600)
 ```
 
 
