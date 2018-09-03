@@ -27,7 +27,7 @@ load_sample_base()
 
 ## 7.1 台风影响
 
-### 7.1.1 温比亚台风影响
+### 7.1.1 温比亚台风的时空影响
 
 ```{r}
 jdwby <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_08_16~21.csv",stringsAsFactors=F)
@@ -55,9 +55,13 @@ y <- dcast(x,x$province~x$day)
 kable(cbind(y[1],round(y[2:7])))
 ```
 
+山东
+
 ```{r}
 27078/32091
 ```
+
+河南
 
 ```{r}
 15024/17735
@@ -76,39 +80,208 @@ ggplot(x,aes(x$province,as.factor(x$day),fill=x$Wmean))+
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\台风温比亚.png",dpi=600,height=4.5,width=9)
 ```
 
+### 7.1.2 温比亚对山东省影响
+
 ```{r}
 wbysd <- jdwbys[jdwbys$province=="山东省",]
 dim(wbysd)
 ```
 
 ```{r}
-wbysd17 <- jdwbys[jdwbys$day==17,]
+wbysd17 <- wbysd[wbysd$day==17,]
 dim(wbysd17)
-wbysd21 <- jdwbys[jdwbys$day==21,]
-dim(wbysd21)
+wbysd20 <- wbysd[wbysd$day==20,]
+dim(wbysd20)
 ```
 
 ```{r}
-wbysd21s <- wbysd21[,c(1,12)]
-x <- merge(wbysd17,wbysd21s,by="index")
+wbysd20s <- wbysd20[,c(1,12)]
+x <- merge(wbysd17,wbysd20s,by="index")
 dim(x)
 names(x)[12] <- "cars17"
-names(x)[31] <- "cars21"
+names(x)[31] <- "cars20"
 ```
 
 ```{r}
-x$diff <- x$cars21-x$cars17
+x$diff <- x$cars20-x$cars17
 summary(x$diff)
 ```
 
 ```{r}
-#t <- sbdeep(x$diff,4,0)
-x$type <- ifelse(x$diff>0,1,0)
+#t <- sbdeep(x$diff,5,0)
+x$type <- ifelse(x$diff>0,"增加","减少")
+#x$type <- t$degreevalue
 xsd <- x[x$province=="山东省",]
 xsd <- xsd[,c(1,2,4,5,33)]
 ```
 
 ```{r}
-geo_pointplot(xsd,na.rm = T,type=T)
+geo_pointplot(xsd,na.rm = T,type=T,region = "山东省")
 ```
 
+```{r}
+options(digits = 1)
+```
+
+
+```{r}
+x$cars <- x$diff
+y <- caculate_carsmean(x,"city")
+kable(y)
+```
+
+
+```{r eval=FALSE}
+y$Wmean <- -y$Wmean
+map = leafletGeo("山东省", y)
+
+#涂色环节
+pal <- colorNumeric(palette = "Blues",domain = map$value)
+
+
+leaflet(map) %>% 
+  #addProviderTiles("CartoDB.PositronNoLabels") %>%
+#加入框边界及颜色
+addPolygons(stroke = TRUE,
+                smoothFactor = 1,
+                fillOpacity = 0.7,
+                weight = 1,
+                color = ~pal(value),
+                label = ~popup,
+                #popup = ~htmltools::htmlEscape(popup),
+            labelOptions = labelOptions(noHide = T)) %>%
+#加入右下角边框
+addLegend("bottomright", pal = pal, values = ~value,
+              title = "交通量下降量",
+              labFormat = leaflet::labelFormat(prefix = ""),
+              opacity = 1)
+```
+
+```{r}
+xweifang <- x[x$city=="潍坊市",]
+dim(xweifang)
+y <- caculate_carsmean(xweifang,"county")
+kable(y)
+```
+
+```{r}
+xlinyi <- x[x$city=="临沂市",]
+dim(xlinyi)
+y <- caculate_carsmean(xlinyi,"county")
+kable(y)
+```
+
+```{r}
+x$cars <- x$diff
+y <- caculate_carsmean(x,"county")
+y$Wmean <- round(y$Wmean,3)
+kable(y)
+```
+
+
+```{r}
+x$cars <- x$diff/x$cars17
+y <- caculate_carsmean(x,"county")
+y$Wmean <- round(y$Wmean,3)
+kable(y)
+```
+
+102个区县中，下降量在10000以上的有17个，下降量在5000以上的有53个，30%以上10个，在20%以上的有30个，10%以上71个。
+
+### 7.1.3 温比亚对河南省影响
+
+```{r}
+wbyhn <- jdwbys[jdwbys$province == "河南省",]
+dim(wbyhn)
+```
+
+```{r}
+wbyhn17 <- wbyhn[wbyhn$day == 17,]
+dim(wbyhn17)
+wbyhn19 <- wbyhn[wbyhn$day == 19,]
+dim(wbyhn19)
+```
+
+```{r}
+wbyhn19s <- wbyhn19[,c(1,12)]
+x <- merge(wbyhn17,wbyhn19s,by="index")
+dim(x)
+names(x)[12] <- "cars17"
+names(x)[31] <- "cars19"
+```
+
+```{r}
+x$diff <- x$cars19-x$cars17
+summary(x$diff)
+```
+
+```{r}
+x$type <- ifelse(x$diff>0,"增加","减少")
+#x$type <- t$degreevalue
+xsd <- x[x$province=="河南省",]
+xsd <- xsd[,c(1,2,4,5,33)]
+geo_pointplot(xsd,na.rm = T,type=T,region = "河南省")
+```
+
+```{r}
+x$cars <- x$diff
+y <- caculate_carsmean(x,"city")
+kable(y)
+```
+
+```{r eval=FALSE}
+y$Wmean <- -y$Wmean
+map = leafletGeo("河南省", y)
+
+#涂色环节
+pal <- colorNumeric(palette = "Blues",domain = map$value)
+
+
+leaflet(map) %>% 
+  # addProviderTiles("CartoDB.PositronNoLabels") %>%
+#加入框边界及颜色
+addPolygons(stroke = TRUE,
+                smoothFactor = 1,
+                fillOpacity = 0.7,
+                weight = 1,
+                color = ~pal(value),
+                label = ~popup,
+                #popup = ~htmltools::htmlEscape(popup),
+            labelOptions = labelOptions(noHide = T)) %>%
+#加入右下角边框
+addLegend("bottomright", pal = pal, values = ~value,
+              title = "交通量下降量",
+              labFormat = leaflet::labelFormat(prefix = ""),
+              opacity = 1)
+```
+
+```{r}
+xpuyang <- x[x$city=="濮阳市",]
+dim(xpuyang)
+y <- caculate_carsmean(xpuyang,"county")
+kable(y)
+```
+
+```{r}
+xshangqiu <- x[x$city=="商丘市",]
+dim(xshangqiu)
+y <- caculate_carsmean(xshangqiu,"county")
+kable(y)
+```
+
+```{r}
+x$cars <- x$diff
+y <- caculate_carsmean(x,"county")
+y$Wmean <- round(y$Wmean,3)
+kable(y)
+```
+
+```{r}
+options(digits = 3)
+x$cars <- x$diff/x$cars17
+y <- caculate_carsmean(x,"county")
+y$Wmean <- round(y$Wmean,3)
+kable(y)
+```
+
+115个区县中，下降量在30%以上24个，20%以上49个，10%以上74个。
