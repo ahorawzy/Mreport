@@ -29,3 +29,86 @@ load_sample_base()
 
 ### 7.1.1 温比亚台风影响
 
+```{r}
+jdwby <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_08_16~21.csv",stringsAsFactors=F)
+dim(jdwby)
+```
+
+```{r}
+jdwbys <- handle_gather_forday(jdwby)
+dim(jdwbys)
+```
+
+```{r}
+names(jdwbys)
+```
+
+```{r}
+table(jdwbys$day)
+```
+
+```{r}
+x <- caculate_carsmean(jdwbys,c("province","day"))
+x <- x[x$province %in% c("江苏省","天津市","河北省",
+                         "安徽省","河南省","山东省"),]
+y <- dcast(x,x$province~x$day)
+kable(cbind(y[1],round(y[2:7])))
+```
+
+```{r}
+27078/32091
+```
+
+```{r}
+15024/17735
+```
+
+
+```{r}
+ggplot(x,aes(x$province,as.factor(x$day),fill=x$Wmean))+
+  geom_tile()+
+  coord_flip()+
+  xlab("省级行政区")+
+  ylab("日期")+
+  labs(fill="单日交通量")+
+  theme(axis.text.y = element_text(size=12))+
+  theme(axis.text.x = element_text(size=12))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\台风温比亚.png",dpi=600,height=4.5,width=9)
+```
+
+```{r}
+wbysd <- jdwbys[jdwbys$province=="山东省",]
+dim(wbysd)
+```
+
+```{r}
+wbysd17 <- jdwbys[jdwbys$day==17,]
+dim(wbysd17)
+wbysd21 <- jdwbys[jdwbys$day==21,]
+dim(wbysd21)
+```
+
+```{r}
+wbysd21s <- wbysd21[,c(1,12)]
+x <- merge(wbysd17,wbysd21s,by="index")
+dim(x)
+names(x)[12] <- "cars17"
+names(x)[31] <- "cars21"
+```
+
+```{r}
+x$diff <- x$cars21-x$cars17
+summary(x$diff)
+```
+
+```{r}
+#t <- sbdeep(x$diff,4,0)
+x$type <- ifelse(x$diff>0,1,0)
+xsd <- x[x$province=="山东省",]
+xsd <- xsd[,c(1,2,4,5,33)]
+```
+
+```{r}
+geo_pointplot(xsd,na.rm = T,type=T)
+```
+
