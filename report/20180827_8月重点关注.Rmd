@@ -1,8 +1,10 @@
 ---
-title: "20180827_8月重点关注"
+title: "20180827_8鏈堥噸鐐瑰叧娉<a8>"
 author: "wzy"
-date: "2018年8月27日"
-output: html_document
+date: "2018骞<b4>8鏈<88>27鏃<a5>"
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r}
@@ -18,6 +20,7 @@ library(ggplot2)
 library(reshape2)
 library(knitr)
 library(lubridate)
+library(usefulr)
 ```
 
 ```{r}
@@ -115,7 +118,7 @@ xsd <- x[x$province=="山东省",]
 xsd <- xsd[,c(1,2,4,5,33)]
 ```
 
-```{r}
+```{r eval=FALSE}
 geo_pointplot(xsd,na.rm = T,type=T,region = "山东省")
 ```
 
@@ -175,7 +178,7 @@ kable(y)
 x$cars <- x$diff
 y <- caculate_carsmean(x,"county")
 y$Wmean <- round(y$Wmean,3)
-kable(y)
+kable(head(y,20))
 ```
 
 
@@ -183,7 +186,7 @@ kable(y)
 x$cars <- x$diff/x$cars17
 y <- caculate_carsmean(x,"county")
 y$Wmean <- round(y$Wmean,3)
-kable(y)
+kable(head(y,20))
 ```
 
 102个区县中，下降量在10000以上的有17个，下降量在5000以上的有53个，30%以上10个，在20%以上的有30个，10%以上71个。
@@ -215,7 +218,7 @@ x$diff <- x$cars19-x$cars17
 summary(x$diff)
 ```
 
-```{r}
+```{r eval=FALSE}
 x$type <- ifelse(x$diff>0,"增加","减少")
 #x$type <- t$degreevalue
 xsd <- x[x$province=="河南省",]
@@ -273,7 +276,7 @@ kable(y)
 x$cars <- x$diff
 y <- caculate_carsmean(x,"county")
 y$Wmean <- round(y$Wmean,3)
-kable(y)
+kable(head(y,20))
 ```
 
 ```{r}
@@ -281,7 +284,191 @@ options(digits = 3)
 x$cars <- x$diff/x$cars17
 y <- caculate_carsmean(x,"county")
 y$Wmean <- round(y$Wmean,3)
-kable(y)
+kable(head(y,20))
 ```
 
 115个区县中，下降量在30%以上24个，20%以上49个，10%以上74个。
+
+## 7.2 8月暑期旅游景区交通情况
+
+### 7.2.1 8月全国旅游景区交通情况
+
+```{r include=FALSE}
+jdnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_08.csv")
+jdlast <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2018_07_2.csv")
+jdprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd2017_08.csv")
+```
+
+```{r include=FALSE}
+jdnews <- handle_gather(jdnew)
+jdlasts <- handle_gather(jdlast)
+jdpreviouss <- handle_gather(jdprevious)
+usefulstation <- intersect(jdnews$index,jdlasts$index)
+jdnews <- jdnews[jdnews$index %in% usefulstation,]
+jdlasts <- jdlasts[jdlasts$index %in% usefulstation,]
+jdpreviouss <- jdpreviouss[jdpreviouss$index %in% usefulstation,]
+```
+
+#### 机动车
+
+##### 今年8月
+
+```{r}
+jdscenerynew <- jdnews[not(is.na)(jdnews$scenery),]
+dim(jdscenerynew)
+```
+
+```{r}
+weighted.mean(jdscenerynew$cars,na.rm = T)
+```
+
+##### 去年8月
+
+```{r}
+jdsceneryprevious <- jdpreviouss[not(is.na)(jdpreviouss$scenery),]
+dim(jdsceneryprevious)
+```
+
+```{r}
+weighted.mean(jdsceneryprevious$cars,na.rm = T)
+```
+
+##### 今年7月
+
+```{r}
+jdscenerylast <- jdlasts[not(is.na)(jdlasts$scenery),]
+dim(jdscenerylast)
+```
+
+```{r}
+weighted.mean(jdscenerylast$cars,na.rm = T)
+```
+
+同比增长
+
+```{r}
+(28998-26787)/26787
+```
+
+环比增长
+
+```{r}
+(28998-27297)/27297
+```
+
+#### 客车
+
+```{r}
+weighted.mean(jdscenerynew$passenger_cars,na.rm = T)
+weighted.mean(jdsceneryprevious$passenger_cars,na.rm = T)
+weighted.mean(jdscenerylast$passenger_cars,na.rm = T)
+```
+
+```{r}
+(15020-13690)/13690 # 同比
+(15020-13682)/13682 # 环比
+```
+
+#### 各旅游景区情况
+
+```{r}
+scenery1808 <- caculate_carsmean(jdnews,"scenery")
+scenery1807 <- caculate_carsmean(jdlasts,"scenery")
+scenery1708 <- caculate_carsmean(jdpreviouss,"scenery")
+```
+
+```{r}
+tb <- caculate_increaseratio(scenery1808,scenery1708)
+hb <- caculate_increaseratio(scenery1808,scenery1807)
+x <- merge_outcome(scenery1808,tb,hb,bywhat = "scenery")
+```
+
+```{r}
+t <- table(jdnews$province,jdnews$scenery) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","scenery")
+```
+
+```{r}
+g <- merge(x,t,by="scenery")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+g <- g[,c("province","scenery","now","previous","last")]
+kable(g[order(g$province),])
+```
+
+### 7.2.2 8月贵州旅游景区
+
+```{r}
+jdgz <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_0708贵州.csv")
+dim(jdgz)
+```
+
+```{r}
+jdgz <- jdgz[month(jdgz$观测日期)==8,]
+dim(jdgz)
+```
+
+
+```{r}
+jdgzs <- handle_gather_forday(jdgz)
+names(jdgzs)
+```
+
+```{r}
+xp <- jdgzs[jdgzs$label=="小坡观测站",]
+dim(xp)
+```
+
+```{r}
+xp$passenger_cars
+```
+
+```{r}
+xp$day
+```
+
+
+```{r}
+xp <- xp[order(xp$day),]
+ggplot(xp,aes(day,passenger_cars))+
+  geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+  ylim(0,20000)+labs(x="日期",y="客车交通量")+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\小坡.png",dpi=600,height=4.5,width=9)
+```
+
+10月6日达到最大：15636。
+
+```{r}
+dss <- jdgzs[jdgzs$label=="大山哨观测站",]
+dim(dss)
+```
+
+```{r}
+dss <- dss[order(dss$day),]
+```
+
+
+```{r}
+ggplot(dss,aes(day,passenger_cars))+
+  geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+  labs(x="日期",y="客车交通量")+ylim(0,50000)+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\大山哨.png",dpi=600,height=4.5,width=9)
+```
+
+```{r}
+x <- caculate_level_passcarsmean(jdgzs,"day")
+x <- x[order(x$day),c(1,2,3)]
+x <- melt(x,id.vars = "day")
+```
+
+```{r}
+ggplot(x,aes(day,value,group=variable,colour=variable))+
+  geom_point()+
+  geom_line()+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
+  labs(x="日期",y="单日交通量",colour="道路等级")+
+  ylim(0,22000)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\国高国道.png",dpi=600,height=4.5,width=9)
+```
