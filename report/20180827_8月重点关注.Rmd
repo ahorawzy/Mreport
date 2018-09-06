@@ -191,6 +191,30 @@ kable(head(y,20))
 
 102个区县中，下降量在10000以上的有17个，下降量在5000以上的有53个，30%以上10个，在20%以上的有30个，10%以上71个。
 
+```{r}
+jdsd <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_山东8月分日.csv",stringsAsFactors=F)
+dim(jdsd)
+```
+
+```{r}
+jdsds <- handle_gather_forday(jdsd)
+dim(jdsds)
+```
+
+```{r}
+x <- caculate_carsmean(jdsds,"day")
+x <- x[order(x$day),]
+```
+
+```{r}
+ggplot(x,aes(day,Wmean))+geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+    ylim(26000,33000)+labs(x="日期",y="机动车交通量")+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
+  geom_point(aes(x=20,y=27032.91),colour="red",size = 3)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\山东8月分日.png",dpi=600,height=4.5,width=9)
+```
+
+
 ### 7.1.3 温比亚对河南省影响
 
 ```{r}
@@ -288,6 +312,30 @@ kable(head(y,20))
 ```
 
 115个区县中，下降量在30%以上24个，20%以上49个，10%以上74个。
+
+```{r}
+jdhn <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_河南8月分日.csv",stringsAsFactors=F)
+dim(jdhn)
+```
+
+```{r}
+jdhns <- handle_gather_forday(jdhn)
+dim(jdhns)
+```
+
+```{r}
+x <- caculate_carsmean(jdhns,"day")
+x <- x[order(x$day),]
+x
+```
+
+```{r}
+ggplot(x,aes(day,Wmean))+geom_point(colour="steelblue")+geom_line(colour="steelblue")+
+    ylim(14000,19000)+labs(x="日期",y="机动车交通量")+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
+  geom_point(aes(x=19,y=14962.64),colour="red",size = 3)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\河南8月分日.png",dpi=600,height=4.5,width=9)
+```
 
 ## 7.2 8月暑期旅游景区交通情况
 
@@ -399,12 +447,7 @@ kable(g[order(g$province),])
 ### 7.2.2 8月贵州旅游景区
 
 ```{r}
-jdgz <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_0708贵州.csv")
-dim(jdgz)
-```
-
-```{r}
-jdgz <- jdgz[month(jdgz$观测日期)==8,]
+jdgz <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2018_贵州8月分日.csv",stringsAsFactors=F)
 dim(jdgz)
 ```
 
@@ -418,21 +461,11 @@ names(jdgzs)
 xp <- jdgzs[jdgzs$label=="小坡观测站",]
 dim(xp)
 ```
-
-```{r}
-xp$passenger_cars
-```
-
-```{r}
-xp$day
-```
-
-
 ```{r}
 xp <- xp[order(xp$day),]
 ggplot(xp,aes(day,passenger_cars))+
   geom_point(colour="steelblue")+geom_line(colour="steelblue")+
-  ylim(0,20000)+labs(x="日期",y="客车交通量")+
+  ylim(5000,18000)+labs(x="日期",y="客车交通量")+
   scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\小坡.png",dpi=600,height=4.5,width=9)
 ```
@@ -452,7 +485,7 @@ dss <- dss[order(dss$day),]
 ```{r}
 ggplot(dss,aes(day,passenger_cars))+
   geom_point(colour="steelblue")+geom_line(colour="steelblue")+
-  labs(x="日期",y="客车交通量")+ylim(0,50000)+
+  labs(x="日期",y="客车交通量")+ylim(20000,45000)+
   scale_x_continuous(breaks = c(1,31,seq(1,31,2)))
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\大山哨.png",dpi=600,height=4.5,width=9)
 ```
@@ -472,3 +505,41 @@ ggplot(x,aes(day,value,group=variable,colour=variable))+
   ylim(0,22000)
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\7月分析\\绘图\\国高国道.png",dpi=600,height=4.5,width=9)
 ```
+
+```{r}
+x <- caculate_level_passcarsmean(jdgzs,"day")
+x <- x[,c(1,2)]
+```
+
+
+```{r}
+jd2017gz <- read.csv("D:\\data\\sx_raw\\交调数据\\8月重点\\jd2017_贵州8月分日.csv",stringsAsFactors=F)
+dim(jd2017gz)
+```
+
+```{r}
+jd2017gzs <- handle_gather_forday(jd2017gz)
+dim(jd2017gzs)
+```
+
+```{r}
+y <- caculate_level_passcarsmean(jd2017gzs,"day")
+y <- y[order(y$day),c(1,2)]
+```
+
+```{r}
+z <- cbind(x,y)
+z <- z[,-3]
+names(z)[2:3] <- c("2018年8月","2017年8月")
+z <- melt(z,id.vars = "day")
+```
+
+```{r}
+ggplot(z,aes(x=z$day,y=z$value,group=z$variable,colour=z$variable))+
+  geom_line()+geom_point()+
+  scale_x_continuous(breaks = c(1,31,seq(1,31,2)))+
+  labs(x="日期",y="单日交通量",colour="年份")+
+  ylim(10000,22000)
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\8月分析\\绘图\\贵州1718对比.png",dpi=600,height=4.5,width=9)
+```
+
