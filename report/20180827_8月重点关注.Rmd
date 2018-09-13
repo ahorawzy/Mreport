@@ -72,7 +72,7 @@ kable(cbind(y[1],round(y[2:7])))
 
 
 ```{r}
-ggplot(x,aes(x$province,as.factor(x$day),fill=x$Wmean))+
+ggplot(x,aes(x$province,as.factor(x$day),fill=-x$Wmean))+
   geom_tile()+
   coord_flip()+
   xlab("省级行政区")+
@@ -131,6 +131,12 @@ options(digits = 1)
 x$cars <- x$diff
 y <- caculate_carsmean(x,"city")
 kable(y)
+```
+
+```{r}
+options(digits = 3)
+x$cars <- (x$cars20-x$cars17)/x$cars17
+kable(caculate_carsmean(x,"city"))
 ```
 
 
@@ -233,7 +239,8 @@ dim(wbyhn19)
 wbyhn19s <- wbyhn19[,c(1,12)]
 x <- merge(wbyhn17,wbyhn19s,by="index")
 dim(x)
-names(x)[12] <- "cars17"
+#names(x)[12] <- "cars17"
+names(x)[12] <- "cars"
 names(x)[31] <- "cars19"
 ```
 
@@ -254,6 +261,12 @@ geo_pointplot(xsd,na.rm = T,type=T,region = "河南省")
 x$cars <- x$diff
 y <- caculate_carsmean(x,"city")
 kable(y)
+```
+
+```{r}
+options(digits = 3)
+x$cars <- (x$cars19-x$cars17)#/x$cars17
+kable(caculate_carsmean(x,"city"))
 ```
 
 ```{r eval=FALSE}
