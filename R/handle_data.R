@@ -79,3 +79,14 @@ handle_gather_forday <- function(jdcd) {
   jdcd <- merge(jdcd,roadlevel,by="index",all.x = T)
   jdcd <- subset(jdcd,index %in% station_use)
 }
+
+#' @export
+handle_gather_forym <- function(jdcd){
+  jdcd <- split_ym(jdcd)
+  jdcd <- caculate_equivalent(jdcd)
+  jdcd <- select_atts_forym(jdcd)
+  jdcd <- handle_mergeline(jdcd,station_line)
+  jdcd <- handle_mergesample(jdcd,sample_base)
+  jdcd <- merge(jdcd,roadlevel,by="index",all.x = T)
+  jdcd <- subset(jdcd,index %in% station_use)
+}
