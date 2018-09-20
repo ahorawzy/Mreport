@@ -1,0 +1,53 @@
+---
+title: "20180920_货运计算1"
+author: "wzy"
+date: "2018年9月20日"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F,warning = F)
+```
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\split.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r}
+jd1718 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd20172018.csv",stringsAsFactors = F)
+dim(jd1718)
+```
+
+```{r}
+jd1718s <- handle_gather_forym(jd1718)
+names(jd1718s)
+```
+
+```{r}
+jd1718s$ym <- factor(jd1718s$ym,levels = sort(unique(jd1718s$ym)),ordered=T)
+```
+
+```{r}
+caculate_frecarsmean(jd1718s,"ym")
+```
+
