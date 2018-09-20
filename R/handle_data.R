@@ -89,4 +89,6 @@ handle_gather_forym <- function(jdcd){
   jdcd <- handle_mergesample(jdcd,sample_base)
   jdcd <- merge(jdcd,roadlevel,by="index",all.x = T)
   jdcd <- subset(jdcd,index %in% station_use)
+  jdcd$ym <- factor(jdcd$ym,levels = sort(unique(jdcd$ym)),ordered=T)
+  return(jdcd)
 }
