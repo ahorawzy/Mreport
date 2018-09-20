@@ -40,14 +40,8 @@ dim(jd1718)
 
 ```{r}
 jd1718s <- handle_gather_forym(jd1718)
-names(jd1718s)
 ```
 
 ```{r}
-jd1718s$ym <- factor(jd1718s$ym,levels = sort(unique(jd1718s$ym)),ordered=T)
-```
-
-```{r}
-caculate_frecarsmean(jd1718s,"ym")
-```
+caculate_frecarsmean(jd1718s,c("ym","level")) %>% dcast(ym~level)
 
