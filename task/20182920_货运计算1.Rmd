@@ -35,6 +35,8 @@ load_sample_base()
 
 ## 1. 核心城市
 
+### 总行驶量
+
 ```{r}
 jdcity <- read.csv("D:\\data\\sx_raw\\交调数据\\jdcity.csv",stringsAsFactors = F)
 ```
@@ -50,6 +52,7 @@ jdcitys <- jdcitys[jdcitys$ym != "2018-09月",]
 
 ```{r}
 x <- caculate_frecarsmean(jdcitys,c("ym","province","level")) %>% dcast(ym+province~level)
+x <- x[,c(1,2,3,4,6,5)]
 head(x,10)
 ```
 
@@ -61,8 +64,20 @@ x2
 ```
 
 ```{r}
-write.csv(x2,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市总行驶量.csv")
+write.csv(x2,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市月平均日总行驶量.csv")
 ```
+
+### 货车出行量
+
+```{r}
+x3 <- caculate_freight_trip(x,mileage,"province")
+x3
+```
+
+```{r}
+write.csv(x3,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市月平均日货车出行次数.csv")
+```
+
 
 ## 3. 东中西三部分
 
@@ -76,8 +91,19 @@ jdprovinces <- handle_gather_forym(jdprovince)
 ```
 
 
+```{r}
+jdprovinces <- jdprovinces[jdprovinces$ym != "2018-09月",]
+```
 
+```{r}
+x <- caculate_frecarsmean(jdprovinces,c("ym","province","level")) %>% dcast(ym+province~level)
+x <- x[,c(1,2,3,4,6,5)]
+head(x,10)
+```
 
-
+```{r}
+x2 <- caculate_travel_volume(x,mileage,"province")
+x2
+```
 
 
