@@ -37,12 +37,10 @@ load_sample_base()
 
 ```{r}
 jdcity <- read.csv("D:\\data\\sx_raw\\交调数据\\jdcity.csv",stringsAsFactors = F)
-dim(jdcity)
 ```
 
 ```{r}
 jdcitys <- handle_gather_forym(jdcity)
-names(jdcitys)
 ```
 
 ```{r}
@@ -51,31 +49,33 @@ jdcitys <- jdcitys[jdcitys$ym != "2018-09月",]
 
 
 ```{r}
-caculate_frecarsmean(jdcitys,c("ym","province","level")) %>% dcast(ym+province~level)
+x <- caculate_frecarsmean(jdcitys,c("ym","province","level")) %>% dcast(ym+province~level)
+head(x,10)
 ```
 
 ```{r}
-mileage <- c()
+x2 <- caculate_travel_volume(x,mileage,"province")
+x2$武汉市 <- x2$湖北省/7
+x2$湖北省 <- NULL
+x2
 ```
 
+```{r}
+write.csv(x2,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市总行驶量.csv")
+```
 
 ## 3. 东中西三部分
 
 ```{r}
-jd1718 <- read.csv("D:\\data\\sx_raw\\交调数据\\jd20172018.csv",stringsAsFactors = F)
-dim(jd1718)
-```
-
-
-```{r}
-jd1718s <- handle_gather_forym(jd1718)
+jdprovince <- read.csv("D:\\data\\sx_raw\\交调数据\\jdprovince.csv",stringsAsFactors = F)
+dim(jdprovince)
 ```
 
 ```{r}
-caculate_frecarsmean(jd1718s,c("ym","province")) %>% 
-  ggplot(aes(ym,Wmean,group=province,colour=province))+geom_point()+geom_line()+
-  theme(axis.text.x = element_text(size = 10, angle = 90))
+jdprovinces <- handle_gather_forym(jdprovince)
 ```
+
+
 
 
 
