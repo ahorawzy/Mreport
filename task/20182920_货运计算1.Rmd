@@ -35,7 +35,7 @@ load_sample_base()
 
 ## 1. 核心城市
 
-### 总行驶量
+### 货车行驶量
 
 ```{r}
 jdcity <- read.csv("D:\\data\\sx_raw\\交调数据\\jdcity.csv",stringsAsFactors = F)
@@ -78,6 +78,9 @@ x3
 write.csv(x3,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市月平均日货车出行次数.csv")
 ```
 
+## 2. 重点运输通道
+
+
 
 ## 3. 东中西三部分
 
@@ -101,9 +104,42 @@ x <- x[,c(1,2,3,4,6,5)]
 head(x,10)
 ```
 
+### 货车行驶量
+
 ```{r}
 x2 <- caculate_travel_volume(x,mileage,"province")
 x2
 ```
 
+```{r}
+write.csv(x2,file="D:\\交大云同步\\实习\\19_货运分析\\计算结果\\东中西11省月均日货车行驶量.csv")
+```
+
+### 货车出行量
+
+```{r}
+x3 <- caculate_freight_trip(x,mileage,"province")
+x3
+```
+
+```{r}
+write.csv(x3,file="D:\\交大云同步\\实习\\19_货运分析\\计算结果\\东中西11省月均日货车出行量.csv")
+```
+
+### 货运量
+
+```{r}
+x4 <- x3*16.754
+x4
+```
+
+```{r}
+write.csv(x4,file="D:\\交大云同步\\实习\\19_货运分析\\计算结果\\东中西11省月均日货运量.csv")
+```
+
+## 4. 疏港公路
+
+```{r eval=F}
+geo_pointplot(station_plot,na.rm=T)
+```
 
