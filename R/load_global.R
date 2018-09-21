@@ -15,6 +15,7 @@ load_base <- function() {
     load_raw("roadlevel")
     load_raw("province_level")
     load_raw("province_region")
+    load_raw("mileage")
 }
 
 #' @export
