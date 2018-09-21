@@ -3,6 +3,7 @@
 export(caculate_carsmean)
 export(caculate_developratio)
 export(caculate_frecarsmean)
+export(caculate_freight_trip)
 export(caculate_increaseratio)
 export(caculate_level_carsmean)
 export(caculate_level_frecarsmean)
