@@ -6,7 +6,7 @@ caculate_travel_volume <- function(section_volume,mileage,atts){
   m2 <- lapply(m, `[`, 2:5)
   k2 <- list(length = length(l2))
   for (i in 1:length(l2)) {
-    k2[[i]] <- l2[[i]] * matrix(as.numeric(m2[[names(l2[1])]]),nrow = nrow(l2[[i]]),ncol = 4,byrow=T)
+    k2[[i]] <- l2[[i]] * matrix(as.numeric(m2[[names(l2[i])]]),nrow = nrow(l2[[i]]),ncol = 4,byrow=T)
   }
   names(k2) <- names(l2)
   k3 <- lapply(k2, rowSums, na.rm = T)
@@ -24,7 +24,7 @@ caculate_freight_trip <- function(section_volume,mileage,atts){
   m2 <- lapply(m, `[`, 2:5)
   k2 <- list(length = length(l2))
   for (i in 1:length(l2)) {
-    k2[[i]] <- l2[[i]] * matrix(as.numeric(m2[[names(l2[1])]]),nrow = nrow(l2[[i]]),ncol = 4,byrow=T)
+    k2[[i]] <- l2[[i]] * matrix(as.numeric(m2[[names(l2[i])]]),nrow = nrow(l2[[i]]),ncol = 4,byrow=T)
   }
   names(k2) <- names(l2)
   k3 <- k2
