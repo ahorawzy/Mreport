@@ -58,7 +58,7 @@ head(x,10)
 
 ```{r}
 x2 <- caculate_travel_volume(x,mileage,"province")
-x2$武汉市 <- x2$湖北省/7
+x2$武汉市 <- x2$湖北省/9
 x2$湖北省 <- NULL
 x2
 ```
@@ -67,10 +67,13 @@ x2
 write.csv(x2,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市月平均日总行驶量.csv")
 ```
 
+
 ### 货车出行量
 
 ```{r}
 x3 <- caculate_freight_trip(x,mileage,"province")
+x3$武汉市 <- x3$湖北省/9
+x3$湖北省 <- NULL
 x3
 ```
 
@@ -78,8 +81,53 @@ x3
 write.csv(x3,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\三市月平均日货车出行次数.csv")
 ```
 
+
 ## 2. 重点运输通道
 
+```{r}
+jdg60 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdG60.csv",stringsAsFactors = F)
+dim(jdg60)
+```
+
+```{r}
+jdg60s <- handle_gather_forym(jdg60)
+```
+
+```{r}
+jdg60s <- jdg60s[jdg60s$ym != "2018-09月",]
+```
+
+```{r}
+names(jdg60s)
+```
+
+### 断面交通量
+
+```{r}
+x <- caculate_frecarsmean(jdg60s,c("ym","level")) %>% dcast(ym~level)
+x
+```
+
+```{r}
+write.csv(x,file="D:\\交大云同步\\实习\\19_货运分析\\计算结果\\G60断面交通量.csv")
+```
+
+
+### 货车出行次数
+
+G60高速全长2730km
+
+```{r}
+x2 <- x
+x2[2] <- x[2]*2730;x2
+```
+
+### 货运量
+
+```{r}
+x3 <- x2
+x3[2] <- x2[2]*16.754;x3
+```
 
 
 ## 3. 东中西三部分
@@ -139,7 +187,49 @@ write.csv(x4,file="D:\\交大云同步\\实习\\19_货运分析\\计算结果\\�
 
 ## 4. 疏港公路
 
-```{r eval=F}
-geo_pointplot(station_plot,na.rm=T)
+重庆港朝天门码头附近没有交调站
+
+```{r}
+unique(sample_base$portroad$V1)
+```
+
+```{r}
+portroad <- sample_base$portroad
+portroad[portroad$V1 == "上海港",]
+```
+
+```{r}
+portroad <- sample_base$portroad
+portroad[portroad$V1 == "南京港",]
+```
+
+```{r}
+jdport <- read.csv("D:\\data\\sx_raw\\交调数据\\jdport.csv",stringsAsFactors = F)
+dim(jdport)
+```
+
+```{r}
+names(jdport)
+```
+
+```{r}
+jdports <- handle_gather_forym(jdport)
+```
+
+```{r}
+jdports <- jdports[jdports$ym != "2018-09月",]
+```
+
+```{r}
+names(jdports)
+```
+
+```{r}
+x <- caculate_frecarsmean(jdports,c("ym","city")) %>% dcast(ym~city)
+x
+```
+
+```{r}
+write.csv(x,file = "D:\\交大云同步\\实习\\19_货运分析\\计算结果\\上海港南京港平均日断面交通量.csv")
 ```
 
