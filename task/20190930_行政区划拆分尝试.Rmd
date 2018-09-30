@@ -1,0 +1,34 @@
+---
+title: "20180930_行政区划拆分尝试"
+author: "王致远"
+date: "2018年9月30日"
+output: html_document
+---
+
+```{r}
+library(Mreport)
+library(stringr)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r}
+allstation <- read.csv("D:\\交大云同步\\实习\\00_交调系统\\交调系统数据\\交调站点管理\\交调站数据.csv",stringsAsFactors=F)
+dim(allstation)
+```
+
+
+```{r}
+district <- allstation$行政区划
+head(district,50)
+```
+
+```{r}
+pattern <- "(.*(省))|(.*(自治区))|(北京市)|(上海市)|(重庆市)|(天津市)"
+x <- str_extract(district,pattern)
+unique(x)
+```
+
