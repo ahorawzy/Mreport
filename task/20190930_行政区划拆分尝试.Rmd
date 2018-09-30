@@ -27,8 +27,31 @@ head(district,50)
 ```
 
 ```{r}
-pattern <- "(.*(省))|(.*(自治区))|(北京市)|(上海市)|(重庆市)|(天津市)"
+pattern <- "([^省]*省)|([^自治区]*(自治区))|(北京市)|(上海市)|(重庆市)|(天津市)"
 x <- str_extract(district,pattern)
 unique(x)
+```
+
+```{r}
+allstation$省份 <- x
+```
+
+```{r}
+pattern <- "((?<=省)[^(自治州|直辖县)]*?市)|(北京市)|(上海市)|(重庆市)|(天津市)|(?<=自治州).*(市|县)|((?<=省直辖县级行政区划).*?市)"
+x <- str_extract(district,pattern)
+unique(x)
+```
+
+```{r}
+allstation$市 <- x
+sum(is.na(allstation$市))
+```
+
+```{r}
+head(allstation[is.na(allstation$市),])
+```
+
+```{r}
+str_detect("辽宁省锦州市市辖区","((?<=省)[^自治州]*?市)")
 ```
 
