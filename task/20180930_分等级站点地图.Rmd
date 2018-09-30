@@ -1,0 +1,56 @@
+---
+title: "20180930_分等级交调站地图"
+author: "wzy"
+date: "2018年9月30日"
+output: html_document
+---
+
+```{r}
+library(Mreport)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r}
+x <- station_useful[,c(1,2,3,5,19,20)]
+names(x) <- c("popup","label","col","level","lng","lat")
+```
+
+```{r}
+x <- na.omit(x)
+x <- x[x$label != "兴安台",]
+x <- x[x$label != "大王柳",]
+```
+
+
+```{r}
+gg <- x[x$level == "国家高速",]
+gd <- x[x$level == "普通国道",]
+sg <- x[x$level == "省级高速",]
+sd <- x[x$level == "普通省道",]
+qb <- x
+```
+
+
+```{r}
+pal <- colorFactor(c("darkgreen", "yellow", "blue"),domain = unique(x$col))
+leaflet(na.omit(x)) %>% 
+  setView(lng=116.38,lat=39.9,zoom=9) %>% 
+  addTiles() %>% 
+  addCircleMarkers(data=qb,label = ~label,popup = ~popup,color = ~pal(col),group = "全部站点") %>% 
+  addCircleMarkers(data=gg,label = ~label,popup = ~popup,color = ~pal(col),group = "国家高速") %>% 
+  addCircleMarkers(data=gd,label = ~label,popup = ~popup,color = ~pal(col),group = "普通国道") %>%
+  addCircleMarkers(data=sg,label = ~label,popup = ~popup,color = ~pal(col),group = "省级高速") %>%
+  addCircleMarkers(data=sd,label = ~label,popup = ~popup,color = ~pal(col),group = "普通省道") %>%
+  addLayersControl(
+    baseGroups = c("全部站点", "国家高速", "普通国道","省级高速","普通省道"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>% 
+  addLegend(pal=pal,values=unique(x$col),position = "bottomright")
+```
+
