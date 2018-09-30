@@ -1,0 +1,92 @@
+---
+title: "20180930_经纬度缺失情况"
+author: "wzy"
+date: "2018年9月30日"
+output: html_document
+---
+
+```{r}
+rm(list=ls())
+```
+
+```{r}
+library(Mreport)
+library(leaflet)
+library(leafletCN)
+library(knitr)
+library(plyr)
+library(reshape2)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 基本情况
+
+所有站点一共43200个
+
+```{r}
+dim(station_useful)
+```
+
+连续型站点7959个
+
+```{r warning=FALSE,message=FALSE}
+table(station_useful$观测站类型)
+```
+
+国高近3000个，省高不到1000个，普通国省道各近7000个。
+
+```{r}
+table(station_useful$行政等级)
+```
+
+属于国高、省高、普通国省道的连续式交掉站有7440个
+
+```{r}
+y <- table(station_useful$行政等级,station_useful$观测站类型)
+y <- y[c(2,3,4,5),c(3,2,1)]
+y
+```
+
+## 经纬度缺失情况
+
+43200个点中，经纬度缺失38395个，缺失率88.87%.
+
+```{r}
+sum(is.na(station_useful$经度))
+sum(is.na(station_useful$经度))/43200
+```
+
+缺失情况汇总表
+
+```{r}
+x <- ddply(station_useful,c("行政等级","观测站类型"),function(x) sum(is.na(x[["经度"]])))
+x <- dcast(x,x$行政等级~x$观测站类型)
+names(x)[1] <- "等级"
+x <- x[c(2,3,4,5),c(1,4,3,2)]
+x
+```
+
+```{r}
+extractnumcol <- function(df){
+  return(df[sapply(df, is.numeric)])
+}
+```
+
+经纬度缺失比例表
+
+```{r}
+z <- extractnumcol(x)/extractnumcol(y)
+rownames(z) <- x$等级
+round(z,3)
+```
+
+```{r}
+allstation <- read.csv("D:\\交大云同步\\实习\\00_交调系统\\交调系统数据\\交调站点管理\\交调站数据.csv",stringsAsFactors=F)
+dim(allstation)
+```
+
+
