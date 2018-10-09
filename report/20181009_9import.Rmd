@@ -1,0 +1,175 @@
+---
+title: "Untitled"
+author: "王致远"
+date: "2018年10月9日"
+output: html_document
+---
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\split.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+
+```{r}
+options(stringsAsFactors = F)
+```
+
+
+# 9月重点关注-国庆中秋专题
+
+## 国庆节
+
+```{r}
+gq2018 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2018.csv")
+gq2017 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2017.csv")
+gq2016 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2016.csv")
+gq2015 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2015.csv")
+gq2014 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2014.csv")
+dim(gq2018)
+dim(gq2017)
+dim(gq2016)
+dim(gq2015)
+dim(gq2014)
+```
+
+```{r}
+gq2018s <- handle_gather_formd(gq2018)
+gq2018s <- guoqing_transform(gq2018s)
+gq2017s <- handle_gather_formd(gq2017)
+gq2017s <- guoqing_transform(gq2017s)
+```
+
+```{r}
+usefulstation <- intersect(gq2018s$index,gq2017s$index)
+gq2018s <- gq2018s[gq2018s$index %in% usefulstation,]
+gq2017s <- gq2017s[gq2017s$index %in% usefulstation,]
+```
+
+
+```{r}
+names(gq2018s)
+```
+
+### 总量分析
+
+```{r}
+x <- caculate_all_cars(gq2018s)
+x
+y <- caculate_all_cars(gq2017s)
+y
+(x-y)/y
+```
+
+```{r}
+x <- caculate_all_passcars(gq2018s)
+x
+y <- caculate_all_passcars(gq2017s)
+y
+(x-y)/y
+```
+
+```{r}
+x <- caculate_all_frecars(gq2018s)
+y <- caculate_all_frecars(gq2017s)
+(x-y)/y
+```
+
+
+### 按日分析
+
+```{r}
+caculate_carsmean(gq2018s,"md") %>% arrange(md)
+```
+
+```{r}
+caculate_carsmean(gq2017s,"md") %>% arrange(md)
+```
+
+```{r}
+x <- caculate_carsmean(gq2018s,"md") %>% arrange(md)
+y <- caculate_carsmean(gq2017s,"md") %>% arrange(md)
+caculate_increaseratio(x,y) %>% arrange(md)
+```
+
+### 按道路等级
+
+```{r}
+caculate_carsmean(gq2018s,c("md","level")) %>% arrange(level) %>% dcast(md~level) %>% kable()
+```
+
+
+
+### 分省分析
+
+```{r}
+x <- caculate_carsmean(gq2018s,"province")
+x$province <- factor(x$province,levels = province_level,ordered = T)
+x <- arrange(x,province)
+kable(x)
+```
+
+```{r}
+y <- caculate_carsmean(gq2017s,"province")
+z <- caculate_increaseratio(x,y)
+z <- merge(x,z)
+z$province <- factor(z$province,levels = province_level,ordered = T)
+kable(arrange(z,province))
+```
+
+### 通道分析
+
+```{r}
+x <- caculate_carsmean(gq2018s,"horizon10")
+y <- caculate_carsmean(gq2017s,"horizon10")
+z <- caculate_increaseratio(x,y)
+z
+```
+
+```{r}
+x <- caculate_carsmean(gq2018s,"vertical10")
+y <- caculate_carsmean(gq2017s,"vertical10")
+z <- caculate_increaseratio(x,y)
+z
+```
+
+### 城市群分析
+
+```{r}
+x <- caculate_carsmean(gq2018s,"citygroup2")
+y <- caculate_carsmean(gq2017s,"citygroup2")
+z <- caculate_increaseratio(x,y)
+z
+```
+
+### 机场
+
+```{r}
+x <- caculate_carsmean(gq2018s,"airport")
+x
+y <- caculate_carsmean(gq2017s,"airport")
+z <- caculate_increaseratio(x,y)
+z
+```
+
+
