@@ -64,22 +64,36 @@ gq2017s <- guoqing_transform(gq2017s)
 ```
 
 ```{r}
+usefulstation <- intersect(gq2018s$index,gq2017s$index)
+gq2018s <- gq2018s[gq2018s$index %in% usefulstation,]
+gq2017s <- gq2017s[gq2017s$index %in% usefulstation,]
+```
+
+
+```{r}
 names(gq2018s)
 ```
 
 ## 总量分析
 
 ```{r}
-caculate_all_cars(gq2018s)
-caculate_all_passcars(gq2018s)
-caculate_all_frecars(gq2018s)
+x <- caculate_all_cars(gq2018s)
+y <- caculate_all_cars(gq2017s)
+(x-y)/y
 ```
 
 ```{r}
-caculate_all_cars(gq2017s)
-caculate_all_passcars(gq2017s)
-caculate_all_frecars(gq2017s)
+x <- caculate_all_passcars(gq2018s)
+y <- caculate_all_passcars(gq2017s)
+(x-y)/y
 ```
+
+```{r}
+x <- caculate_all_frecars(gq2018s)
+y <- caculate_all_frecars(gq2017s)
+(x-y)/y
+```
+
 
 ### 按日分析
 
@@ -92,15 +106,45 @@ caculate_carsmean(gq2017s,"md") %>% arrange(md)
 ```
 
 ```{r}
-caculate_increaseratio(caculate_carsmean(gq2018s,"md") %>% arrange(md),caculate_carsmean(gq2017s,"md") %>% arrange(md)) %>% arrange(md)
+x <- caculate_carsmean(gq2018s,"md") %>% arrange(md)
+y <- caculate_carsmean(gq2017s,"md") %>% arrange(md)
+caculate_increaseratio(x,y) %>% arrange(md)
 ```
 
+### 分省分析
 
 ```{r}
-caculate_carsmean(gq2018s,"province")
+x <- caculate_carsmean(gq2018s,"province")
+x$province <- factor(x$province,levels = province_level,ordered = T)
+x <- arrange(x,province)
+kable(x)
 ```
 
+```{r}
+y <- caculate_carsmean(gq2017s,"province")
+z <- caculate_increaseratio(x,y)
+z$province <- factor(z$province,levels = province_level,ordered = T)
+z <- arrange(z,province)
+kable(z)
+```
 
+### 通道分析
 
+```{r}
+x <- caculate_carsmean(gq2018s,"horizon10")
+y <- caculate_carsmean(gq2017s,"horizon10")
+z <- caculate_increaseratio(x,y)
+z
+```
 
+```{r}
+x <- caculate_carsmean(gq2018s,"vertical10")
+y <- caculate_carsmean(gq2017s,"vertical10")
+z <- caculate_increaseratio(x,y)
+z
+```
+
+```{r}
+head(mtcars)
+```
 
