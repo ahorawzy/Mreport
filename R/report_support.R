@@ -133,3 +133,10 @@ result_present2 <- function(newsjd,previoussjd,attsname,carstype){
   names(w) <- c(attsname,"now","ratio")
   return(w)
 }
+
+#' @export
+merge_list <- function(bywhat){
+  function(df1,df2){
+    merge(df1,df2,by=bywhat)
+  }
+}
