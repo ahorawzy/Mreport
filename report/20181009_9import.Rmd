@@ -1,8 +1,10 @@
 ---
 title: "Untitled"
-author: "王致远"
-date: "2018年10月9日"
-output: html_document
+author: "鐜嬭嚧杩<9c>"
+date: "2018骞<b4>10鏈<88>9鏃<a5>"
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r}
@@ -99,18 +101,9 @@ y <- caculate_all_frecars(gq2017s)
 ### 按日分析
 
 ```{r}
-caculate_carsmean(gq2018s,"md") %>% arrange(md)
+result_present2(gq2018s,gq2017s,"md","cars") %>% arrange(md) %>% kable()
 ```
 
-```{r}
-caculate_carsmean(gq2017s,"md") %>% arrange(md)
-```
-
-```{r}
-x <- caculate_carsmean(gq2018s,"md") %>% arrange(md)
-y <- caculate_carsmean(gq2017s,"md") %>% arrange(md)
-caculate_increaseratio(x,y) %>% arrange(md)
-```
 
 ### 按道路等级
 
@@ -118,58 +111,77 @@ caculate_increaseratio(x,y) %>% arrange(md)
 caculate_carsmean(gq2018s,c("md","level")) %>% arrange(level) %>% dcast(md~level) %>% kable()
 ```
 
+```{r}
+x <- caculate_carsmean(gq2018s,c("md","level"))
+ggplot(x,aes(x=md,y=Wmean,group=level,color=level))+geom_point()+geom_line()+
+  labs(x="日期",y="平均日交通量",color="公路等级")+
+  scale_y_continuous(breaks = c(0,50000,seq(0,50000,5000)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分公路等级交通量.png",dpi=600,height=4.5,width=9)
+```
 
 
 ### 分省分析
 
 ```{r}
-x <- caculate_carsmean(gq2018s,"province")
-x$province <- factor(x$province,levels = province_level,ordered = T)
+x <- result_present2(gq2018s,gq2017s,"province","cars")
+x$province <- factor(x$province,levels=province_level,ordered = T)
 x <- arrange(x,province)
 kable(x)
 ```
 
+
+### 公路枢纽
+
 ```{r}
-y <- caculate_carsmean(gq2017s,"province")
-z <- caculate_increaseratio(x,y)
-z <- merge(x,z)
-z$province <- factor(z$province,levels = province_level,ordered = T)
-kable(arrange(z,province))
+result_present2(gq2018s,gq2017s,"roadhub","cars") %>% kable()
 ```
+
 
 ### 通道分析
 
 ```{r}
-x <- caculate_carsmean(gq2018s,"horizon10")
-y <- caculate_carsmean(gq2017s,"horizon10")
-z <- caculate_increaseratio(x,y)
-z
+result_present2(gq2018s,gq2017s,"horizon10","cars") %>% kable()
 ```
 
+
 ```{r}
-x <- caculate_carsmean(gq2018s,"vertical10")
-y <- caculate_carsmean(gq2017s,"vertical10")
-z <- caculate_increaseratio(x,y)
-z
+result_present2(gq2018s,gq2017s,"vertical10","cars") %>% kable()
 ```
+
 
 ### 城市群分析
 
 ```{r}
-x <- caculate_carsmean(gq2018s,"citygroup2")
-y <- caculate_carsmean(gq2017s,"citygroup2")
-z <- caculate_increaseratio(x,y)
-z
+result_present2(gq2018s,gq2017s,"citygroup2","cars") %>% kable()
 ```
 
 ### 机场
 
 ```{r}
-x <- caculate_carsmean(gq2018s,"airport")
-x
-y <- caculate_carsmean(gq2017s,"airport")
-z <- caculate_increaseratio(x,y)
-z
+result_present2(gq2018s,gq2017s,"airport","cars") %>% kable()
 ```
 
+### 省界
 
+```{r}
+result_present2(gq2018s,gq2017s,"provincedistinct","cars") %>% kable()
+```
+
+### 大城市出入口
+
+```{r}
+result_present2(gq2018s,gq2017s,"bigcityio","cars") %>% kable()
+```
+
+### 旅游景区
+
+```{r}
+x <- result_present2(gq2018s,gq2017s,"scenery","cars")
+t <- table(gq2018s$province,gq2018s$scenery) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","scenery")
+g <- merge(x,t,by="scenery")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+g <- g[order(g$province),c(4,1,2,3)]
+kable(g)
+```
