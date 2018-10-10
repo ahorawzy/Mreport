@@ -45,56 +45,73 @@ options(stringsAsFactors = F)
 ```{r}
 gq2018 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2018.csv")
 gq2017 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2017.csv")
-gq2016 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2016.csv")
-gq2015 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2015.csv")
-gq2014 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2014.csv")
 dim(gq2018)
 dim(gq2017)
-dim(gq2016)
-dim(gq2015)
-dim(gq2014)
 ```
 
 ```{r}
-gq2018s <- handle_gather_formd(gq2018)
-gq2018s <- guoqing_transform(gq2018s)
-gq2017s <- handle_gather_formd(gq2017)
-gq2017s <- guoqing_transform(gq2017s)
+years <- c(2018,2017,2016,2015,2014)
+gqall <- list()
+for(i in 1:length(years)){
+  path <- paste(c("D:\\data\\sx_raw\\交调数据\\jdnational",years[i],".csv"),collapse="")
+  gqall[[i]] <- read.csv(path)
+}
+names(gqall) <- years
 ```
 
 ```{r}
-usefulstation <- intersect(gq2018s$index,gq2017s$index)
-gq2018s <- gq2018s[gq2018s$index %in% usefulstation,]
-gq2017s <- gq2017s[gq2017s$index %in% usefulstation,]
+sapply(gqall, dim)
 ```
-
 
 ```{r}
-names(gq2018s)
+gqalls <- lapply(gqall, handle_gather_formd)
+gqalls <- lapply(gqalls, guoqing_transform)
 ```
+
+```{r eval=FALSE}
+usefulstation <- intersect(gqalls[[1]]$index,gqalls[[2]]$index)
+gqalls <- lapply(gqalls,function(x) x[x[["index"]] %in% usefulstation,] )
+```
+
+```{r}
+gq2018s <- gqalls[[1]]
+gq2017s <- gqalls[[2]]
+```
+
+```{r}
+x <- lapply(gqalls, caculate_carsmean, "md")
+y <- Reduce(merge_list(bywhat="md"),x)
+names(y)[2:6] <- names(x)
+y <- melt(y)
+ggplot(y,aes(y$md,y$value,group=y$variable,color=y$variable))+geom_point()+geom_line()
+```
+
 
 ### 总量分析
 
 ```{r}
-x <- caculate_all_cars(gq2018s)
-x
-y <- caculate_all_cars(gq2017s)
-y
-(x-y)/y
+(x <- sapply(gqalls, caculate_all_cars))
 ```
 
 ```{r}
-x <- caculate_all_passcars(gq2018s)
-x
-y <- caculate_all_passcars(gq2017s)
-y
-(x-y)/y
+(x[1]-x[2])/x[2]
+```
+
+
+```{r}
+(x <- sapply(gqalls, caculate_all_passcars))
 ```
 
 ```{r}
-x <- caculate_all_frecars(gq2018s)
-y <- caculate_all_frecars(gq2017s)
-(x-y)/y
+(x[1]-x[2])/x[2]
+```
+
+```{r}
+(x <- sapply(gqalls, caculate_all_frecars))
+```
+
+```{r}
+(x[1]-x[2])/x[2]
 ```
 
 
@@ -185,3 +202,6 @@ g$province <- factor(g$province,ordered = T,levels=province_level)
 g <- g[order(g$province),c(4,1,2,3)]
 kable(g)
 ```
+
+
+
