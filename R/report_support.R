@@ -82,7 +82,7 @@ data_use <- function(jd){
 #' @return A dataframe consists of 3 columns, including now_wmean, previous_increaseratio, last_increaseratio.
 #'
 #' @export
-result_present <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
+result_present3 <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
   if(carstype == "cars"){
     newcars <- caculate_carsmean(newsjd,attsname)
     previouscars <- caculate_carsmean(previoussjd,attsname)
@@ -108,4 +108,27 @@ result_present <- function(newsjd,previoussjd,lastsjd,attsname,carstype){
     stop("Wrong carstype!")
   }
   return(z)
+}
+
+#' @export
+result_present2 <- function(newsjd,previoussjd,attsname,carstype){
+  if(carstype == "cars"){
+    x <- caculate_carsmean(newsjd,attsname)
+    y <- caculate_carsmean(previoussjd,attsname)
+    z <- caculate_increaseratio(x,y)
+    w <- merge(x,z,by=attsname)
+  } else if(carstype == "passcars"){
+    x <- caculate_passcarsmean(newsjd,attsname)
+    y <- caculate_passcarsmean(previoussjd,attsname)
+    z <- caculate_increaseratio(x,y)
+    w <- merge(x,z,by=attsname)
+  } else if(carstype == "frecars"){
+    x <- caculate_frecarsmean(newsjd,attsname)
+    y <- caculate_frecarsmean(previoussjd,attsname)
+    z <- caculate_increaseratio(x,y)
+    w <- merge(x,z,by=attsname)
+  } else{
+    stop("Wrong carstype!")
+  }
+  return(w)
 }
