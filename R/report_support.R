@@ -130,5 +130,6 @@ result_present2 <- function(newsjd,previoussjd,attsname,carstype){
   } else{
     stop("Wrong carstype!")
   }
+  names(w) <- c(attsname,"now","ratio")
   return(w)
 }
