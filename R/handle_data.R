@@ -107,6 +107,18 @@ handle_gather_formd <- function(jdcd){
 }
 
 #' @export
+handle_gather_formd_line <- function(jdcd){
+  jdcd <- split_md(jdcd)
+  jdcd <- caculate_equivalent(jdcd)
+  jdcd <- select_atts_formd_line(jdcd)
+  jdcd <- handle_mergesample(jdcd,sample_base)
+  jdcd <- merge(jdcd,roadlevel,by="index",all.x = T)
+  jdcd <- subset(jdcd,index %in% station_use)
+  jdcd$md <- factor(jdcd$md,levels = sort(unique(jdcd$md)),ordered=T)
+  return(jdcd)
+}
+
+#' @export
 guoqing_transform <- function(jdcd){
   jdcd$md <- factor(jdcd$md,levels = c("9-30","10-1","10-2","10-3","10-4","10-5","10-6","10-7"),ordered=T)
   return(jdcd)
