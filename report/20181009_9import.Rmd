@@ -44,8 +44,8 @@ options(stringsAsFactors = F)
 ## 国庆节
 
 ```{r}
-gq2018 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2018.csv")
-gq2017 <- read.csv("D:\\data\\sx_raw\\交调数据\\jdnational2017.csv")
+gq2018 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2018.csv")
+gq2017 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2017.csv")
 dim(gq2018)
 dim(gq2017)
 ```
@@ -54,7 +54,7 @@ dim(gq2017)
 years <- c(2018,2017,2016,2015,2014)
 gqall <- list()
 for(i in 1:length(years)){
-  path <- paste(c("D:\\data\\sx_raw\\交调数据\\jdnational",years[i],".csv"),collapse="")
+  path <- paste(c("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational",years[i],".csv"),collapse="")
   gqall[[i]] <- read.csv(path)
 }
 names(gqall) <- years
@@ -79,16 +79,20 @@ gq2018s <- gqalls[[1]]
 gq2017s <- gqalls[[2]]
 ```
 
+
 ```{r}
 x <- lapply(gqalls, caculate_carsmean, "md")
 y <- Reduce(merge_list(bywhat="md"),x)
 names(y)[2:6] <- names(x)
+y
 y <- melt(y)
+```
+
+```{r}
 ggplot(y,aes(y$md,y$value,group=y$variable,color=y$variable))+geom_point()+geom_line()+
   labs(x="日期",y="平均交通量",colour="年份")
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\近五年国庆节分日.png",dpi=600,height=4.5,width=9)
 ```
-
 
 ### 总量分析
 
@@ -164,7 +168,7 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘
 
 ### 分省分析
 
-```{r}
+```{r eval=FALSE}
 caculate_carsmean(gq2018s,"province") %>% 
   geojsonMap("China",palette = "Reds",legendTitle = "交通量图例")
 ```
@@ -241,5 +245,37 @@ g <- g[order(g$province),c(4,1,2,3)]
 kable(g)
 ```
 
+
+### 20条重点通道
+
+```{r}
+jd201820 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2018-20route.csv")
+dim(jd201820)
+```
+
+```{r}
+jd201820s <- handle_gather_formd_line(jd201820)
+jd201820s <- guoqing_transform(jd201820s)
+dim(jd201820s)
+```
+
+```{r}
+x <- caculate_carsmean(jd201820s,c("lineindex","linename"))
+x <- arrange(x,desc(Wmean))
+kable(x)
+```
+
+
+```{r}
+x <- caculate_carsmean(jd201820s,c("md","lineindex"))
+dcast(x,md~lineindex)
+```
+
+```{r}
+ggplot(x,aes(x=x$md,y=x$Wmean,color=x$lineindex,group=x$lineindex))+
+  geom_point()+geom_line()+ylim(0,150000)+
+  labs(x="日期",y="平均日交通量",color="公路等级")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节20条重要通道交通量.png",dpi=600,height=4.5,width=9)
+```
 
 
