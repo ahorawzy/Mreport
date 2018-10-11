@@ -25,6 +25,7 @@ library(reshape2)
 library(knitr)
 library(leaflet)
 library(leafletCN)
+library(parallel)
 ```
 
 ```{r}
@@ -83,7 +84,9 @@ x <- lapply(gqalls, caculate_carsmean, "md")
 y <- Reduce(merge_list(bywhat="md"),x)
 names(y)[2:6] <- names(x)
 y <- melt(y)
-ggplot(y,aes(y$md,y$value,group=y$variable,color=y$variable))+geom_point()+geom_line()
+ggplot(y,aes(y$md,y$value,group=y$variable,color=y$variable))+geom_point()+geom_line()+
+  labs(x="日期",y="平均交通量",colour="年份")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\近五年国庆节分日.png",dpi=600,height=4.5,width=9)
 ```
 
 
@@ -136,8 +139,36 @@ ggplot(x,aes(x=md,y=Wmean,group=level,color=level))+geom_point()+geom_line()+
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分公路等级交通量.png",dpi=600,height=4.5,width=9)
 ```
 
+### 分车型
+
+```{r}
+(x <- caculate_passcarsmean(gq2018s,"md"))
+```
+
+```{r}
+(y <- caculate_frecarsmean(gq2018s,"md"))
+```
+
+```{r}
+z <- merge(x,y,by="md")
+names(z)[2:3] <- c("客车交通量","货车交通量")
+z <- melt(z)
+```
+
+```{r}
+ggplot(z,aes(x=md,y=value,group=variable,color=variable))+geom_point()+geom_line()+
+  ylim(5000,12000)+labs(x="日期",y="平均交通量",color="车类")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分车类型交通量.png",dpi=600,height=4.5,width=9)
+```
+
 
 ### 分省分析
+
+```{r}
+caculate_carsmean(gq2018s,"province") %>% 
+  geojsonMap("China",palette = "Reds",legendTitle = "交通量图例")
+```
+
 
 ```{r}
 x <- result_present2(gq2018s,gq2017s,"province","cars")
@@ -151,6 +182,13 @@ kable(x)
 
 ```{r}
 result_present2(gq2018s,gq2017s,"roadhub","cars") %>% kable()
+```
+
+```{r}
+x <- caculate_carsmean(gq2018s,c("roadhub","md"))
+ggplot(x,aes(x=md,y=Wmean,group=roadhub,colour=roadhub))+geom_point()+geom_line()+
+  ylim(0,50000)+labs(x="日期",y="平均交通量",colour="区域")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分区域交通量.png",dpi=600,height=4.5,width=9)
 ```
 
 
