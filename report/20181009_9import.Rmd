@@ -229,7 +229,7 @@ result_present2(gq2018s,gq2017s,"provincedistinct","cars") %>% kable()
 ### 大城市出入口
 
 ```{r}
-result_present2(gq2018s,gq2017s,"bigcityio","cars") %>% kable()
+result_present2(gq2018s,gq2017s,"bigcityio","cars") %>% arrange(desc(now)) %>% kable()
 ```
 
 ### 旅游景区
