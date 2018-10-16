@@ -161,8 +161,25 @@ result_present2(gq2018s,gq2017s,"airport","cars") %>% kable()
 ### 省界
 
 ```{r}
-result_present2(gq2018s,gq2017s,"provincedistinct","cars") %>% kable()
+x <- result_present2(gq2018s,gq2017s,"provincedistinct","cars")
+y <- merge(gq2018s,x[-1,],by="provincedistinct")
 ```
+
+```{r}
+x <- gq2018s[!is.na(gq2018s$provincedistinct),]
+y <- x[,c(1,2,4,5,12)]
+```
+
+```{r eval=FALSE}
+reg <- leafletCN::leafletGeo("China")
+pal <- colorNumeric("Reds",log(y$cars+1))
+leaflet(y) %>% 
+  addProviderTiles("OpenStreetMap.BlackAndWhite") %>% 
+  addPolygons(data = reg, stroke = TRUE, smoothFactor = 1, fillOpacity = 0, weight = 1) %>% 
+  addCircles(lng = ~lng,lat = ~lat,popup = ~index,label = ~label,radius = ~cars/5,color = ~pal(log(y$cars+1)))
+```
+
+
 
 ### 大城市出入口
 
