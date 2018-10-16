@@ -120,6 +120,6 @@ handle_gather_formd_line <- function(jdcd){
 
 #' @export
 guoqing_transform <- function(jdcd){
-  jdcd$md <- factor(jdcd$md,levels = c("9-30","10-1","10-2","10-3","10-4","10-5","10-6","10-7"),ordered=T)
+  jdcd$md <- factor(jdcd$md,levels = c("9-30","10-1","10-2","10-3","10-4","10-5","10-6","10-7","10-8"),ordered=T)
   return(jdcd)
 }
