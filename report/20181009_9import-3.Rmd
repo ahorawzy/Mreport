@@ -1,0 +1,214 @@
+---
+title: "Untitled"
+author: "鐜嬭嚧杩<9c>"
+date: "2018骞<b4>10鏈<88>9鏃<a5>"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\split.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+library(parallel)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+
+```{r}
+options(stringsAsFactors = F)
+```
+
+
+# 9月重点关注-国庆中秋专题
+
+## 国庆节
+
+```{r}
+gq2018 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2018-3.csv")
+gq2017 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2017-3.csv")
+dim(gq2018)
+dim(gq2017)
+```
+
+
+```{r}
+gq2018s <- handle_gather_formd(gq2018)
+gq2018s <- guoqing_transform(gq2018s)
+gq2017s <- handle_gather_formd(gq2017)
+gq2017s <- guoqing_transform(gq2017s)
+```
+
+
+
+### 按日分析
+
+```{r}
+result_present2(gq2018s,gq2017s,"md","cars") %>% arrange(md) %>% kable()
+```
+
+
+### 按道路等级
+
+```{r}
+caculate_carsmean(gq2018s,c("md","level")) %>% arrange(level) %>% dcast(md~level) %>% kable()
+```
+
+```{r}
+x <- caculate_carsmean(gq2018s,c("md","level"))
+ggplot(x,aes(x=md,y=Wmean,group=level,color=level))+geom_point()+geom_line()+
+  labs(x="日期",y="平均日交通量",color="公路等级")+
+  scale_y_continuous(breaks = c(0,50000,seq(0,50000,5000)))
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分公路等级交通量-3.png",dpi=600,height=4.5,width=9)
+```
+
+### 分车型
+
+```{r}
+(x <- caculate_passcarsmean(gq2018s,"md"))
+```
+
+```{r}
+(y <- caculate_frecarsmean(gq2018s,"md"))
+```
+
+```{r}
+z <- merge(x,y,by="md")
+names(z)[2:3] <- c("客车交通量","货车交通量")
+z <- melt(z)
+```
+
+```{r}
+ggplot(z,aes(x=md,y=value,group=variable,color=variable))+geom_point()+geom_line()+
+  ylim(5000,12000)+labs(x="日期",y="平均交通量",color="车类")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分车类型交通量-3.png",dpi=600,height=4.5,width=9)
+```
+
+
+### 分省分析
+
+```{r eval=FALSE}
+caculate_carsmean(gq2018s,"province") %>% 
+  geojsonMap("China",palette = "Reds",legendTitle = "交通量图例")
+```
+
+
+```{r}
+x <- result_present2(gq2018s,gq2017s,"province","cars")
+x$province <- factor(x$province,levels=province_level,ordered = T)
+x <- arrange(x,province)
+kable(x)
+```
+
+
+### 公路枢纽
+
+```{r}
+result_present2(gq2018s,gq2017s,"roadhub","cars") %>% kable()
+```
+
+```{r}
+x <- caculate_carsmean(gq2018s,c("roadhub","md"))
+ggplot(x,aes(x=md,y=Wmean,group=roadhub,colour=roadhub))+geom_point()+geom_line()+
+  ylim(0,50000)+labs(x="日期",y="平均交通量",colour="区域")
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\9月分析\\绘图\\国庆节分区域交通量-3.png",dpi=600,height=4.5,width=9)
+```
+
+
+### 通道分析
+
+```{r}
+result_present2(gq2018s,gq2017s,"horizon10","cars") %>% kable()
+```
+
+
+```{r}
+result_present2(gq2018s,gq2017s,"vertical10","cars") %>% kable()
+```
+
+
+### 城市群分析
+
+```{r}
+result_present2(gq2018s,gq2017s,"citygroup2","cars") %>% kable()
+```
+
+### 机场
+
+```{r}
+result_present2(gq2018s,gq2017s,"airport","cars") %>% kable()
+```
+
+### 省界
+
+```{r}
+result_present2(gq2018s,gq2017s,"provincedistinct","cars") %>% kable()
+```
+
+### 大城市出入口
+
+```{r}
+result_present2(gq2018s,gq2017s,"bigcityio","cars") %>% arrange(desc(now)) %>% kable()
+```
+
+### 旅游景区
+
+```{r}
+x <- result_present2(gq2018s,gq2017s,"scenery","cars")
+t <- table(gq2018s$province,gq2018s$scenery) %>% as.data.frame()
+t <- t[t$Freq!=0,c(1,2)]
+names(t) <- c("province","scenery")
+g <- merge(x,t,by="scenery")
+g$province <- factor(g$province,ordered = T,levels=province_level)
+g <- g[order(g$province),c(4,1,2,3)]
+kable(g)
+```
+
+
+### 20条重点通道
+
+```{r}
+jd201820 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2018-20route-3.csv")
+jd201720 <- read.csv("D:\\data\\sx_raw\\交调数据\\9月重点\\jdnational2017-20route-3.csv")
+dim(jd201820)
+dim(jd201720)
+```
+
+```{r}
+jd201820s <- handle_gather_formd_line(jd201820)
+jd201820s <- guoqing_transform(jd201820s)
+jd201720s <- handle_gather_formd_line(jd201720)
+jd201720s <- guoqing_transform(jd201720s)
+dim(jd201820s)
+dim(jd201720s)
+```
+
+```{r}
+x <- caculate_carsmean(jd201820s,c("lineindex","linename"))
+x <- arrange(x,desc(Wmean))
+kable(x)
+```
+
+```{r}
+result_present2(jd201820s,jd201720s,c("lineindex"),"cars") %>% merge(x[1:2],by="lineindex") %>% arrange(desc(now)) %>% `[`(c(1,4,2,3))%>% kable()
+```
+
