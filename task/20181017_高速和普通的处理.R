@@ -1,0 +1,8 @@
+gq2018s[gq2018s$level == "国家高速","level2"] = "高速"
+gq2018s[gq2018s$level == "省级高速","level2"] = "高速"
+gq2018s[gq2018s$level == "普通国道","level2"] = "普通"
+gq2018s[gq2018s$level == "普通省道","level2"] = "普通"
+gq2017s[gq2017s$level == "国家高速","level2"] = "高速"
+gq2017s[gq2017s$level == "省级高速","level2"] = "高速"
+gq2017s[gq2017s$level == "普通国道","level2"] = "普通"
+gq2017s[gq2017s$level == "普通省道","level2"] = "普通"
