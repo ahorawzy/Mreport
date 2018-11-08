@@ -1,0 +1,66 @@
+---
+title: "20181108_10_important"
+author: "王致远"
+date: "2018年11月8日"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F,warning = F)
+```
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\split.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+## 7. 十月重点关注
+
+
+## 7.1 港珠澳大桥开通运行前后交通量影响分析
+
+```{r}
+xzyk_day <- read.csv("D:\\data\\sx_raw\\交调数据\\10月重点\\XZYK_day.csv",stringsAsFactor=F)
+dim(xzyk_day)
+```
+
+```{r}
+xzyk_mds <- handle_gather_formd(xzyk_day)
+dim(xzyk_mds)
+```
+
+
+```{r}
+xzyk_mds$md <- factor(xzyk_mds$md,level=as.character(xzyk_mds$md),order=T)
+```
+
+
+```{r}
+ggplot(data = xzyk_mds,aes(x=md,y=cars))+
+  geom_point(color="steelblue")+
+  geom_line(group=1,color="steelblue")+
+  scale_x_discrete(breaks=xzyk_mds$md[seq(1,37,3)])+
+  labs()
+```
+
+
+
