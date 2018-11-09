@@ -36,7 +36,9 @@ load_sample_base()
 ## 7. 十月重点关注
 
 
-## 7.1 港珠澳大桥开通运行前后交通量影响分析
+## 7.1 港珠澳大桥开通运行前后交通量变化
+
+### 分日
 
 ```{r}
 xzyk_day <- read.csv("D:\\data\\sx_raw\\交调数据\\10月重点\\XZYK_day.csv",stringsAsFactor=F)
@@ -58,9 +60,64 @@ xzyk_mds$md <- factor(xzyk_mds$md,level=as.character(xzyk_mds$md),order=T)
 ggplot(data = xzyk_mds,aes(x=md,y=cars))+
   geom_point(color="steelblue")+
   geom_line(group=1,color="steelblue")+
-  scale_x_discrete(breaks=xzyk_mds$md[seq(1,37,3)])+
-  labs()
+  scale_x_discrete(breaks=xzyk_mds$md[seq(5,37,7)])+
+  labs(x="日期",y="日平均交通量")
+```
+
+### 分小时
+
+```{r}
+xzyk_hour <- read.csv("D:\\data\\sx_raw\\交调数据\\10月重点\\XZYK_hour.csv",stringsAsFactor=F)
+dim(xzyk_hour)
+```
+
+```{r}
+names(xzyk_hour)
+```
+
+```{r}
+xzyk_hours <- handle_gather_formdh(xzyk_hour)
+```
+
+```{r}
+names(xzyk_hours)
+```
+
+```{r}
+unique(xzyk_hours$md)
+```
+
+```{r}
+xzyk_hours$tf[xzyk_hours$md<="10-25"] <- "开通前"
+xzyk_hours$tf[xzyk_hours$md=="10-26"] <- "最高峰日"
+xzyk_hours$tf[xzyk_hours$md>"10-26"] <- "开通后"
+```
+
+```{r}
+xzyk_hours$tf <- F
+xzyk_hours$tf[xzyk_hours$md %in% c("10-21","10-27","10-28")] <- T
 ```
 
 
+```{r}
+ggplot(xzyk_hours,aes(x=hour,y=cars,group=md,color=tf))+geom_point()+geom_line()+
+  scale_x_continuous(breaks = seq(1,24,2))+
+  labs(x="小时",y="机动车交通量",color="开通前后")
+```
+
+## 7.2 货运分析
+
+```{r}
+months <- 201805:201810
+jdall <- list()
+for(i in 1:length(months)){
+  path <- paste(c("D:\\data\\sx_raw\\交调数据\\jd",months[i],".csv"),collapse = "")
+  jdall[[i]] <- read.csv(path)
+}
+names(jdall) <- months
+```
+
+```{r}
+lapply(jdall, dim)
+```
 
