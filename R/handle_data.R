@@ -123,3 +123,16 @@ guoqing_transform <- function(jdcd){
   jdcd$md <- factor(jdcd$md,levels = c("9-30","10-1","10-2","10-3","10-4","10-5","10-6","10-7","10-8"),ordered=T)
   return(jdcd)
 }
+
+#' @export
+handle_gather_formdh <- function(jdcd){
+  jdcd <- split_md(jdcd)
+  jdcd <- caculate_equivalent(jdcd)
+  jdcd <- select_atts_formdh(jdcd)
+  jdcd <- handle_mergeline(jdcd,station_line)
+  jdcd <- handle_mergesample(jdcd,sample_base)
+  jdcd <- merge(jdcd,roadlevel,by="index",all.x = T)
+  jdcd <- subset(jdcd,index %in% station_use)
+  jdcd$md <- factor(jdcd$md,levels = sort(unique(jdcd$md)),ordered=T)
+  return(jdcd)
+}
