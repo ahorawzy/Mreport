@@ -80,11 +80,8 @@ xzyk_hours <- handle_gather_formdh(xzyk_hour)
 ```
 
 ```{r}
-names(xzyk_hours)
-```
-
-```{r}
-unique(xzyk_hours$md)
+xzyk_hours$tf <- F
+xzyk_hours$tf[xzyk_hours$md %in% c("10-21","10-27","10-28")] <- T
 ```
 
 ```{r}
@@ -94,13 +91,7 @@ xzyk_hours$tf[xzyk_hours$md>"10-26"] <- "开通后"
 ```
 
 ```{r}
-xzyk_hours$tf <- F
-xzyk_hours$tf[xzyk_hours$md %in% c("10-21","10-27","10-28")] <- T
-```
-
-
-```{r}
-ggplot(xzyk_hours,aes(x=hour,y=cars,group=md,color=tf))+geom_point()+geom_line()+
+ggplot(xzyk_hours,aes(x=hour,y=cars,group=md,color=tf))+geom_point()+geom_line(alpha=0.5)+
   scale_x_continuous(breaks = seq(1,24,2))+
   labs(x="小时",y="机动车交通量",color="开通前后")
 ```
