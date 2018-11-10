@@ -91,12 +91,22 @@ xzyk_hours$tf[xzyk_hours$md>"10-26"] <- "开通后"
 ```
 
 ```{r}
-ggplot(xzyk_hours,aes(x=hour,y=cars,group=md,color=tf))+geom_point()+geom_line(alpha=0.5)+
+ggplot(xzyk_hours,aes(x=hour,y=cars,group=md,color=tf))+geom_point()+geom_line(alpha=0.3)+
   scale_x_continuous(breaks = seq(1,24,2))+
   labs(x="小时",y="机动车交通量",color="开通前后")
 ```
 
-## 7.2 货运分析
+## 7.2 货车交通量分析
+
+```{r}
+plot_frecars <- function(jdlist, attsname) {
+  result <- ldply(jdlist, caculate_frecarsmean, attsname)
+  result_plot <- ggplot(result,aes(x=result[[".id"]],y=result[["Wmean"]],
+                            group=result[[attsname]],color=result[[attsname]]))+geom_point()+geom_line()
+  return(result_plot)
+}
+```
+
 
 ```{r}
 months <- 201805:201810
@@ -109,6 +119,110 @@ names(jdall) <- months
 ```
 
 ```{r}
-lapply(jdall, dim)
+sapply(jdall, dim)
 ```
+
+```{r}
+jdalls <- lapply(jdall, handle_gather)
+```
+
+```{r}
+names(jdalls[[1]])
+```
+
+### 1. 总体情况
+
+#### 总量分析
+
+```{r}
+sapply(jdalls,caculate_all_frecars)
+```
+
+#### 分等级分析
+
+
+```{r}
+ldply(jdalls, caculate_frecarsmean, "level") %>% dcast(.id~level)
+```
+
+### 2. 面
+
+#### 分区域分析
+
+```{r}
+ldply(jdalls, caculate_frecarsmean, "roadhub") %>% dcast(.id ~ roadhub)
+```
+
+#### 分城市群分析
+
+```{r}
+ldply(jdalls, caculate_frecarsmean, "citygroup2") %>% dcast(citygroup2~.id)
+```
+
+```{r}
+plot_frecars(jdalls,attsname = "citygroup2")+
+  labs(x="月份",y="货车月均日交通量",color="城市群")
+```
+
+#### 分省分析
+
+```{r}
+t <- ldply(jdalls, caculate_frecarsmean, "province") %>% dcast(province~.id)
+t <- cbind(t[1],rowMeans(cbind(t[5],t[6],t[7]))-rowMeans(cbind(t[2],t[3],t[4])))
+names(t) <- c("province","diff")
+t <- t[t$province!="上海市",]
+t
+```
+
+
+```{r eval=FALSE}
+pal <- colorNumeric(palette = rev(brewer.pal(n=9,name = "RdYlBu")),domain = t$diff)
+map <- leafletGeo("China",t)
+leaflet(map) %>% amap() %>%
+  addPolygons(stroke = TRUE,
+                smoothFactor = 1,
+                fillOpacity = 0.7,
+                weight = 1,
+                color = ~pal(value),
+                popup = ~htmltools::htmlEscape(popup)
+    ) %>%
+    #加入右下角边框
+    addLegend("bottomright", pal = pal, values = ~value,
+              title = "legendTitle",
+              labFormat = leaflet::labelFormat(prefix = ""),
+              opacity = 1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
