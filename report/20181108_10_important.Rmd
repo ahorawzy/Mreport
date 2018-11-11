@@ -1,8 +1,10 @@
 ---
 title: "20181108_10_important"
-author: "王致远"
-date: "2018年11月8日"
-output: html_document
+author: "鐜嬭嚧杩<9c>"
+date: "2018骞<b4>11鏈<88>8鏃<a5>"
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r echo=FALSE}
@@ -27,6 +29,8 @@ library(knitr)
 library(leaflet)
 library(leafletCN)
 library(dplyr)
+library(stringr)
+library(RColorBrewer)
 ```
 
 ```{r}
@@ -120,7 +124,7 @@ plot_frecars <- function(jdlist, attsname) {
 
 
 ```{r}
-months <- 201805:201810
+months <- 201801:201810
 jdall <- list()
 for(i in 1:length(months)){
   path <- paste(c("D:\\data\\sx_raw\\交调数据\\jd",months[i],".csv"),collapse = "")
@@ -128,6 +132,7 @@ for(i in 1:length(months)){
 }
 names(jdall) <- months
 ```
+
 
 ```{r}
 sapply(jdall, dim)
@@ -165,7 +170,7 @@ sapply(jdalls,caculate_all_frecars)
 
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "level") %>% dcast(.id~level)
+ldply(jdalls, caculate_frecarsmean, "level") %>% dcast(.id~level) %>% kable()
 ```
 
 ### 2. 面
@@ -173,14 +178,13 @@ ldply(jdalls, caculate_frecarsmean, "level") %>% dcast(.id~level)
 #### 分区域分析
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "roadhub") %>% dcast(.id ~ roadhub)
+ldply(jdalls, caculate_frecarsmean, "roadhub") %>% dcast(.id ~ roadhub) %>% kable()
 ```
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "roadhub") %>%
-  ggplot(aes(x=roadhub,y=Wmean,fill=.id))+geom_bar(stat = "identity",position = "dodge")+
-  scale_fill_brewer(palette = "Set2")+
-  labs(x="区域",y="月均日交通量",fill="月份")
+ldply(jdalls, caculate_frecarsmean, "roadhub") %>% mutate(month=str_sub(.id,-2,-1)) %>% 
+  ggplot(aes(x=month,y=Wmean,group=roadhub,color=roadhub))+geom_point()+geom_line()+
+  labs(x="月份",y="月均日交通量",color="区域")
 ```
 
 ```{r}
@@ -191,12 +195,13 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\10月分析\\�
 #### 分城市群分析
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "citygroup2") %>% dcast(citygroup2~.id)
+ldply(jdalls, caculate_frecarsmean, "citygroup2") %>% dcast(citygroup2~.id) %>% kable()
 ```
 
 ```{r}
-plot_frecars(jdalls,attsname = "citygroup2")+
-  labs(x="月份",y="货车月均日交通量",color="城市群")
+ldply(jdalls, caculate_frecarsmean, "citygroup2") %>% mutate(month=str_sub(.id,-2,-1)) %>% 
+  ggplot(aes(x=month,y=Wmean,group=citygroup2,color=citygroup2))+geom_point()+geom_line()+
+  labs(x="月份",y="月均日交通量",color="城市群")
 ```
 
 ```{r}
@@ -208,15 +213,15 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\10月分析\\�
 
 ```{r}
 t <- ldply(jdalls, caculate_frecarsmean, "province") %>% dcast(province~.id)
-t <- cbind(t[1],rowMeans(cbind(t[5],t[6],t[7]))-rowMeans(cbind(t[2],t[3],t[4])))
+t <- cbind(t[1],rowMeans(cbind(t[7],t[8],t[9],t[10],t[11]))-rowMeans(cbind(t[2],t[3],t[4],t[5],t[6])))
 names(t) <- c("province","diff")
 t <- t[t$province!="上海市",]
-t
+t %>% kable()
 ```
 
 
 ```{r eval=FALSE}
-pal <- colorNumeric(palette = rev(brewer.pal(n=9,name = "RdYlBu")),domain = t$diff)
+pal <- colorBin(palette = rev(brewer.pal(n=9,name = "RdYlBu")),domain = t$diff)
 map <- leafletGeo("China",t)
 leaflet(map) %>% amap() %>%
   addPolygons(stroke = TRUE,
@@ -228,7 +233,7 @@ leaflet(map) %>% amap() %>%
     ) %>%
     #加入右下角边框
     addLegend("bottomright", pal = pal, values = ~value,
-              title = "legendTitle",
+              title = "货车交通量变化量",
               labFormat = leaflet::labelFormat(prefix = ""),
               opacity = 1)
 ```
@@ -238,14 +243,14 @@ leaflet(map) %>% amap() %>%
 #### 十纵
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "vertical10") %>% dcast(vertical10~.id)
+ldply(jdalls, caculate_frecarsmean, "vertical10") %>% dcast(vertical10~.id) %>% kable()
 ```
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "vertical10") %>% 
-  ggplot(aes(x=.id,y=Wmean,group=1))+geom_point(color="steelblue")+geom_line(color="steelblue")+
+ldply(jdalls, caculate_frecarsmean, "vertical10") %>% mutate(month=str_sub(.id,-2,-1)) %>%
+  ggplot(aes(x=month,y=Wmean,group=1))+geom_point(color="steelblue")+geom_line(color="steelblue")+
   facet_wrap(~vertical10,nrow=2)+
-  theme(axis.text.x=element_text(angle = 90))+
+  theme(axis.text.x=element_text(hjust = 0.5,angle=90))+
   labs(x="月份",y="月均日交通量")
 ```
 
@@ -257,12 +262,12 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\10月分析\\�
 #### 十横
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "horizon10") %>% dcast(horizon10~.id)
+ldply(jdalls, caculate_frecarsmean, "horizon10") %>% dcast(horizon10~.id) %>% kable()
 ```
 
 ```{r}
-ldply(jdalls, caculate_frecarsmean, "horizon10") %>% 
-  ggplot(aes(x=.id,y=Wmean,group=1))+geom_point(color="steelblue")+geom_line(color="steelblue")+
+ldply(jdalls, caculate_frecarsmean, "horizon10") %>% mutate(month=str_sub(.id,-2,-1)) %>%
+  ggplot(aes(x=month,y=Wmean,group=1))+geom_point(color="steelblue")+geom_line(color="steelblue")+
   facet_wrap(~horizon10,nrow=2)+
   theme(axis.text.x=element_text(angle = 90))+
   labs(x="月份",y="月均日交通量")
@@ -277,7 +282,7 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\10月分析\\�
 
 ```{r}
 ldply(jdalls, caculate_frecarsmean, "portroad") %>% 
-  dcast(portroad~.id)
+  dcast(portroad~.id) %>% kable()
 ```
 
 
