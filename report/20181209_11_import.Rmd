@@ -29,6 +29,7 @@ library(leafletCN)
 library(dplyr)
 library(stringr)
 library(RColorBrewer)
+library(stringr)
 ```
 
 ```{r}
@@ -74,12 +75,12 @@ ggplot(jdallbind,aes(jdallbind$hour,jdallbind$cars,group=jdallbind$md,color=jdal
 ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\11月分析\\绘图\\兰州南分小时.png",dpi=600,height=4.5,width=9)
 ```
 
+### 分日
+
 ```{r}
 lznfr <- read.csv("D:\\data\\sx_raw\\交调数据\\11月重点\\lzn11.csv",stringsAsFactors=F)
 dim(lznfr)
 ```
-
-### 分日
 
 ```{r}
 lznfrs <- handle_gather_formd(lznfr)
@@ -103,3 +104,74 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\11月分析\\�
 ```
 
 ## 2. 雅安车祸
+
+```{r}
+ya1102 <- read.csv("D:\\data\\sx_raw\\交调数据\\11月重点\\ya1102.csv",stringsAsFactors=F)
+ya1103 <- read.csv("D:\\data\\sx_raw\\交调数据\\11月重点\\ya1103.csv",stringsAsFactors=F)
+dim(ya1102)
+```
+
+```{r}
+ya1102 <- subset(ya1102,ya1102$行驶方向 != "断面")
+ya1103 <- subset(ya1103,ya1103$行驶方向 != "断面")
+```
+
+```{r}
+ya1102$小时 <- factor(ya1102$小时,ordered = T,levels = unique(ya1102$小时))
+ya1103$小时 <- factor(ya1103$小时,ordered = T,levels = unique(ya1103$小时))
+yaall <- rbind(ya1102,ya1103)
+```
+
+
+```{r}
+yaall$dh <- paste(str_sub(yaall$观测日期,-2,-1),yaall$小时,sep = "-")
+yaall$dh <- factor(yaall$dh,ordered = T,levels=unique(yaall$dh))
+```
+
+```{r}
+ggplot(yaall,aes(x=yaall$dh,y=yaall$机动车当量,group=yaall$行驶方向,color=yaall$行驶方向))+
+  geom_point()+geom_line()+
+  scale_x_discrete(breaks=unique(yaall$dh)[seq(2,48,4)])+
+  scale_color_manual(values=c("blue","red"))+
+  geom_point(aes(x="02-16",y=918),color="red",size=3)+
+  labs(x="日期-时间",y="机动车当量",color="行驶方向")
+```
+
+```{r}
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\11月分析\\绘图\\雅安分小时.png",dpi=600,height=4.5,width=9)
+```
+
+## 3. 重庆万州
+
+```{r}
+cqwz <- read.csv("D:\\data\\sx_raw\\交调数据\\11月重点\\cqwz.csv",stringsAsFactors=F)
+dim(cqwz)
+```
+
+```{r}
+names(cqwz)
+```
+
+```{r}
+cqwz$经度 <- 1:167
+```
+
+
+```{r}
+cqwzs <- handle_gather_formd(cqwz)
+```
+
+```{r}
+names(cqwzs)
+```
+
+
+```{r}
+x <- caculate_carsmean(cqwzs,attsname = "md")
+x
+```
+
+```{r}
+arrange(x,md)
+```
+
