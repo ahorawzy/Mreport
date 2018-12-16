@@ -289,7 +289,7 @@ kable(t)
 ### 6.1 总体情况
 
 ```{r eval=FALSE}
-caculate_carsmean(jdnews,"province") %>% 
+caculate_carsmean(jdnews,"province")[-31,] %>% 
   geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 
@@ -366,7 +366,7 @@ kable(t)
 ### 6.4 货车交通量情况
 
 ```{r eval=FALSE}
-caculate_frecarsmean(jdnews,"province") %>% 
+caculate_frecarsmean(jdnews,"province")[-31,] %>% 
   geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 

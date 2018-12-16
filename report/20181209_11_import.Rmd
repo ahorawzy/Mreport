@@ -144,34 +144,43 @@ ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\11月分析\\�
 ## 3. 重庆万州
 
 ```{r}
-cqwz <- read.csv("D:\\data\\sx_raw\\交调数据\\11月重点\\cqwz.csv",stringsAsFactors=F)
-dim(cqwz)
+days <- c(20,21,27,28)
+jdall <- list()
+for(i in 1:length(days)){
+  path <- paste(c("D:\\data\\sx_raw\\交调数据\\11月重点\\cqwz",days[i],".csv"),collapse="")
+  jdall[[i]] <- read.csv(path)
+}
+names(jdall) <- days
 ```
 
 ```{r}
-names(cqwz)
-```
-
-```{r}
-cqwz$经度 <- 1:167
-```
-
-
-```{r}
-cqwzs <- handle_gather_formd(cqwz)
-```
-
-```{r}
-names(cqwzs)
+sapply(jdall, dim)
 ```
 
 
 ```{r}
-x <- caculate_carsmean(cqwzs,attsname = "md")
-x
+jdalls <- lapply(jdall, handle_gather_formdh)
+names(jdalls[[1]])
 ```
 
 ```{r}
-arrange(x,md)
+x <- lapply(jdalls, caculate_carsmean,"hour")
+x <- lapply(x, arrange, hour)
+x <- Reduce(merge_list(bywhat = "hour"),x)
+names(x)[2:5] <- c("10-20","10-21","10-27","10-28")
+x <- x[-4]
+x <- melt(x,id.vars = "hour")
+```
+
+```{r}
+ggplot(x,aes(x=hour,y=value,group=variable,colour=variable))+
+  geom_point()+
+  geom_line()+
+  scale_x_continuous(breaks=seq(0,24,2))+
+  labs(x="小时",y="机动车交通量",color="日期")
+```
+
+```{r}
+ggsave(file="D:\\交大云同步\\实习\\06_月度分析报告\\11月分析\\绘图\\重庆分小时.png",dpi=600,height=4.5,width=9)
 ```
 
