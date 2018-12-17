@@ -66,6 +66,7 @@ handle_gather <- function(jd){
   jd <- handle_mergeline(jd,station_line)
   jd <- handle_mergesample(jd,sample_base)
   jd <- merge(jd,roadlevel,by="index",all.x = T)
+  jd <- merge(jd,roadlevel2,by="index",all.x = T)
   jd <- subset(jd,index %in% station_use)
 }
 
