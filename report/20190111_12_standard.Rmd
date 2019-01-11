@@ -1,0 +1,415 @@
+---
+title: "20181204_11鏈堟湀鎶ュ垎鏋<90>"
+author: "鐜嬭嚧杩<9c>"
+date: "2018骞<b4>12鏈<88>4鏃<a5>"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = F,message = F,warning = F)
+```
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(leaflet)
+library(leafletCN)
+```
+
+```{r}
+load_base()
+load_sample_base()
+```
+
+```{r include=FALSE}
+jdnew <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201812.csv")
+jdlast <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201811.csv")
+jdprevious <- read.csv("D:\\data\\sx_raw\\交调数据\\jd201712.csv")
+```
+
+```{r include=FALSE}
+jdnews <- handle_gather(jdnew)
+jdlasts <- handle_gather(jdlast)
+jdpreviouss <- handle_gather(jdprevious)
+usefulstation <- intersect(jdnews$index,jdlasts$index)
+usefulstation <- intersect(usefulstation,jdpreviouss$index)
+jdnews <- jdnews[jdnews$index %in% usefulstation,]
+jdlasts <- jdlasts[jdlasts$index %in% usefulstation,]
+jdpreviouss <- jdpreviouss[jdpreviouss$index %in% usefulstation,]
+```
+
+## 2. 全国公路网
+
+### 2.1 机动车
+
+```{r}
+z <- result_present3(jdnews,jdpreviouss,jdlasts,"level","cars")
+names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
+kable(z)
+```
+
+### 2.2 客车
+
+```{r}
+z <- result_present3(jdnews,jdpreviouss,jdlasts,"level","passcars")
+names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
+kable(z)
+```
+
+### 2.3 货车
+
+```{r}
+z <- result_present3(jdnews,jdpreviouss,jdlasts,"level","frecars")
+names(z) <- c("道路等级","本月","同比","环比")
+f <- factor(c("国家高速","普通国道","省级高速","普通省道"),ordered=T)
+z <- z[order(f),]
+kable(z)
+```
+
+## 3. 通道分析
+
+### 3.1 十横通道
+
+#### 机动车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"horizon10","cars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+#### 客车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"horizon10","passcars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+#### 货车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"horizon10","frecars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+### 3.2 十纵通道
+
+#### 机动车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"vertical10","cars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+#### 客车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"vertical10","passcars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+#### 货车
+
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"vertical10","frecars")
+names(t) <- c("十横通道","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+### 3.3 典型通道分省交通情况
+
+#### 3.3.1 沪昆通道
+
+```{r}
+t <- typicalroute_horizon(jdnews,jdpreviouss,"上海-瑞丽")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.2 陆桥通道
+
+```{r}
+t <- typicalroute_horizon(jdnews,jdpreviouss,"连云港-霍尔果斯")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.3 沿江通道
+
+```{r}
+t <- typicalroute_horizon(jdnews,jdpreviouss,"上海-樟木")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.4 天津至红其拉甫通道
+
+```{r}
+t <- typicalroute_horizon(jdnews,jdpreviouss,"天津-红其拉甫")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.5 京沪通道
+
+```{r}
+t <- typicalroute_vertical(jdnews,jdpreviouss,"北京-上海")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.6 沿海通道
+
+```{r}
+t <- typicalroute_vertical(jdnews,jdpreviouss,"同江-三亚")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+#### 3.3.7 黑河至港澳台通道
+
+```{r}
+t <- typicalroute_vertical(jdnews,jdpreviouss,"黑河-港澳台")
+names(t) <- c("省份","月平均日交通量","同比")
+t %>% kable()
+```
+
+
+## 4. 集疏运通道分析
+
+### 4.1 疏港公路分析
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"portroad","frecars")
+t$portroad <- substr(t$portroad,1,nchar(t$portroad)-1)
+t <- t[order(t$now,decreasing = T),]
+rownames(t) <- NULL
+names(t) <- c("港口","日均交通量","同比","环比")
+kable(t)
+```
+
+
+```{r eval=FALSE}
+t <- merge(station_plot,sample_base$portroad,by.x = "popup",by.y = "index",all.y = T)
+p <- jdnews[,c(1,10,11,12)]
+tt <- merge(t,p,by.x = "popup",by.y="index")
+tt <- tt[,-c(1,2)]
+names(tt)[3] <- "label"
+tt <- tt[,c(1,2,3,6)]
+tt <- aggregate(tt,by=list(tt$label),FUN=mean)
+tt$label <- tt$Group.1
+```
+
+```{r eval=FALSE}
+leaflet(tt) %>% addTiles() %>% 
+  # addProviderTiles("CartoDB.PositronNoLabels") %>% 
+  addCircles(label = ~label,lng = ~lng,lat = ~lat,
+             radius = ~cars/3,stroke = F, fillOpacity = 1, fillColor ="red",
+             labelOptions = labelOptions(noHide = T,draggable=T,textsize=25))
+```
+
+
+
+### 4.2 机场连接公路分析
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"airport","cars")
+t <- t[order(t$now,decreasing = T),]
+names(t) <- c("机场","日均交通量","同比","环比")
+rownames(t) <- NULL
+kable(t)
+```
+
+
+```{r eval=FALSE}
+t <- merge(station_plot,sample_base$airport,by.x = "popup",by.y = "index",all.y = T)
+p <- jdnews[,c(1,10,11,12)]
+tt <- merge(t,p,by.x = "popup",by.y="index")
+tt <- tt[,-2]
+names(tt)[4] <- "label"
+leaflet(tt) %>% addTiles() %>% 
+  addCircles(label = ~label,lng = ~lng,lat = ~lat,popup = ~popup,
+             radius = ~cars/5,stroke = F, fillOpacity = 1, fillColor ="red")
+```
+
+## 5. 城市群分析
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"citygroup2","cars")
+names(t) <- c("城市群","月平均日交通量","同比","环比")
+kable(t)
+```
+
+
+### 5.2 客车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"citygroup2","passcars")
+names(t) <- c("城市群","月平均日交通量","同比","环比")
+kable(t)
+```
+
+### 5.3 货车
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"citygroup2","frecars")
+names(t) <- c("城市群","月平均日交通量","同比","环比")
+kable(t)
+```
+
+## 6. 分省情况
+
+### 6.1 总体情况
+
+```{r eval=FALSE}
+caculate_carsmean(jdnews,"province")[-31,] %>% 
+  geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
+```
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"province","cars")
+names(t) <- c("省级行政区","月平均日交通量","同比","环比")
+t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
+```
+
+
+```{r}
+caculate_carsmean(jdnews,"province") %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
+                                                    ylabname="月平均日机动车交通量")
+ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\12月分析\\绘图\\省级机动车.jpg",dpi=600)
+```
+
+
+### 6.2 分道路等级情况
+
+#### 本月
+
+```{r, results="asis"}
+provincenewcars <- caculate_level_carsmean(jdnews,"province")
+provincenewcars$province <- factor(provincenewcars$province,ordered=T,levels = province_level)
+provincenewcars <- provincenewcars[order(provincenewcars$province),c("province","国家高速","普通国道","省级高速","普通省道")]
+rownames(provincenewcars) <- NULL
+kable(provincenewcars)
+```
+
+#### 同比
+
+```{r}
+provincepreviouscars <- caculate_level_carsmean(jdpreviouss,"province")
+provincepreviouscars <- provincepreviouscars[,c("province","国家高速","普通国道","省级高速","普通省道")]
+t <- caculate_increaseratio(provincenewcars,provincepreviouscars)
+t$province <- factor(t$province,ordered=T,levels = province_level)
+t <- t[order(t$province),]
+rownames(t) <- NULL
+kable(t)
+```
+
+#### 环比
+
+```{r}
+provincelastcars <- caculate_level_carsmean(jdlasts,"province")
+provincelastcars <- provincelastcars[,c("province","国家高速","普通国道","省级高速","普通省道")]
+t <- caculate_increaseratio(provincenewcars,provincelastcars)
+t$province <- factor(t$province,ordered=T,levels = province_level)
+t <- t[order(t$province),]
+rownames(t) <- NULL
+kable(t)
+```
+
+### 6.3 客车交通量情况
+
+```{r eval=FALSE}
+caculate_passcarsmean(jdnews,"province") %>% 
+  geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
+```
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"province","passcars")
+names(t) <- c("省级行政区","月平均日交通量","同比","环比")
+t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
+```
+
+
+### 6.4 货车交通量情况
+
+```{r eval=FALSE}
+caculate_frecarsmean(jdnews,"province")[-31,] %>% 
+  geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
+```
+
+```{r}
+t <- result_present3(jdnews,jdpreviouss,jdlasts,"province","frecars")
+names(t) <- c("省级行政区","月平均日交通量","同比","环比")
+t$省级行政区 <- factor(t$省级行政区,ordered=T,levels = province_level)
+t <- t[order(t$省级行政区),]
+rownames(t) <- NULL
+kable(t)
+```
+
+
+## 8. 数据使用情况
+
+本月，上月，去年同月交调站数量分别为：
+
+```{r}
+nrow(jdnews)
+nrow(jdlasts)
+nrow(jdpreviouss)
+```
+
+
+```{r}
+t <- data_use(jdnews)[[1]]
+rownames(t)[32] <- c("合计")
+t <- t[,c("国家高速","普通国道","省级高速","普通省道")]
+kable(t)
+```
+
+分道路等级分别占比
+
+```{r}
+p <- data_use(jdnews)[[2]]
+kable(p)
+```
+
+东中西部数量合计
+
+```{r}
+t$合计 <- rowSums(t)
+t$省份 <- rownames(t)
+t2 <- merge(t,province_region,by="省份")
+tapply(t2$合计, t2$地域, sum)
+```
