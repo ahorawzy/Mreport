@@ -304,7 +304,7 @@ kable(t)
 
 
 ```{r}
-caculate_carsmean(jdnews,"province") %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
+caculate_carsmean(jdnews,"province")[-31,] %>% gg_boxplot(xangle = 90,xlabname = "省级行政区",
                                                     ylabname="月平均日机动车交通量")
 ggsave(filename = "D:\\交大云同步\\实习\\06_月度分析报告\\12月分析\\绘图\\省级机动车.jpg",dpi=600)
 ```
@@ -349,7 +349,7 @@ kable(t)
 ### 6.3 客车交通量情况
 
 ```{r eval=FALSE}
-caculate_passcarsmean(jdnews,"province") %>% 
+caculate_passcarsmean(jdnews,"province")[-31,] %>% 
   geojsonMap(mapName = "China",palette = "Reds",legendTitle = "交通量图例")
 ```
 
