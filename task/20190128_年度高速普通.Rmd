@@ -1,0 +1,61 @@
+---
+title: "20190128_高速普通"
+author: "wzy"
+date: "2019年1月28日"
+output: html_document
+---
+
+```{r}
+options(stringsAsFactors = F)
+options(digits = 3)
+rm(list = ls())
+source("D:\\R\\packages\\Mreport\\scripts\\caculate.R", encoding = "utf-8")
+source("D:\\R\\packages\\Mreport\\scripts\\select.R", encoding = "utf-8")
+```
+
+```{r}
+library(Mreport)
+library(plyr)
+library(dplyr)
+load_base()
+load_sample_base()
+```
+
+```{r}
+months <- 201806:201812
+jdall <- list()
+for(i in 1:length(months)){
+  path <- paste(c("D:\\data\\sx_raw\\交调数据\\jd",months[i],".csv"),collapse = "")
+  jdall[[i]] <- read.csv(path)
+}
+names(jdall) <- months
+```
+
+```{r}
+sapply(jdall, dim)
+```
+
+```{r}
+jdalls <- lapply(jdall, handle_gather)
+```
+
+```{r}
+l <- lapply(jdalls,`[[`,"index")
+usefulstation <- Reduce(intersect,l)
+length(usefulstation)
+jdalls <- lapply(jdalls, function(x) filter(x,index %in% usefulstation))
+sapply(jdalls, dim)
+```
+
+```{r}
+unique(jdalls$`201812`$roadlevel2)
+```
+
+```{r}
+ldply(jdalls, caculate_carsmean, attsname = "roadlevel2") %>% head()
+```
+
+```{r}
+
+```
+
